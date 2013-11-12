@@ -4,7 +4,7 @@
       <strong><%=tra("Suggested Translation")%></strong>
     </div>
 
-    <div id="tr8n_google_suggestion_container_<%=@translation_key.id%>" style="" class="small_section">
+    <div id="tr8n_google_suggestion_container_<%=@translation_key.id%>" class="small_section">
       <%=image_tag("tr8n/left_quote.png", :style=>"text-align:bottom;padding-bottom:5px;") %>
       <a onclick="Tr8n.element('tr8n_translator_translation_label').value=Tr8n.element('tr8n_translation_suggestion_<%=@translation_key.id%>').innerHTML; return false;" href="#">
         <span class="small" id="tr8n_translation_suggestion_<%=@translation_key.id%>" title="<%=trla("Click to insert this suggested translation above")%>"></span>
@@ -14,7 +14,7 @@
       <% sanitized_label = @translation_key.tokenless_label.gsub('"', '\"') %>
       <script type="text/javascript">
         (function() {
-          Tr8n.UI.Translation.suggest("<%=@translation_key.id %>", "<%=sanitized_label %>", "<%=@translation_key.suggestion_tokens.join(',')%>", "<%=@translation_key.language.google_key%>", "<%=tr8n_current_language.google_key%>");
+          Tr8n.UI.Translation.suggest("<%=@translation_key.id %>", "<%=sanitized_label %>", "<%=@translation_key.suggestion_tokens%>", "<%=@translation_key.language.google_key%>", "<%=tr8n_current_language.google_key%>");
         })();
       </script>
     </div>

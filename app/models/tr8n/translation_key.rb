@@ -193,6 +193,10 @@ class Tr8n::TranslationKey < ActiveRecord::Base
     end
   end
 
+  def suggestion_tokens
+    []
+  end
+
   def sanitized_label(replace_tokens = true)
     @sanitized_label ||= begin
       lbl = label.clone
