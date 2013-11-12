@@ -23,6 +23,10 @@
 
 class Tr8n::Translator::NotificationsController < Tr8n::Translator::BaseController
 
+  before_filter :validate_guest_user, :except => [:lb_notifications]
+  before_filter :validate_current_translator, :except => [:lb_notifications]
+  before_filter :validate_selected_application, :except => [:lb_notifications]
+
   def index
     @translator = Tr8n::RequestContext.current_translator
     @stories = Tr8n::Notification.where("translator_id = ?", Tr8n::RequestContext.current_translator.id).order("created_at desc").page(page).per(per_page)

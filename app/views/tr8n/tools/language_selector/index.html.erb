@@ -63,26 +63,26 @@ function removeLanguage(language_id) {
           <% end %>
           <%=tra("{application} Languages", :application => @application.name) %>
         </div>
-
-        <div style="max-height: 160px; overflow: auto; border:solid 1px #e8e8e8; padding:5px; background-color:white;">
-          <ul class="language_list">
-            <% @application_languages.each do |language| %>
-              <li onClick="Tr8n.Dispatcher.postMessage({'subject': 'language_selector', 'action': 'change', 'locale': '<%=language.locale%>'}, '<%=params[:origin]%>')">
-
-                <!--<% if Tr8n::Config.enable_language_stats? %>-->
-                  <!--<span style="font-size:8px; <%=tr8n_style_attribute_tag('float', 'right')%>; color:#ccc;"><%= "#{language.default? ? '100' : (language.completeness || 0)}%" %></span>-->
-                <!--<% end %>-->
-
-                <%= tr8n_language_flag_tag(language) %>
-
-                <span dir="ltr">
-                <%= language.full_name %>
-              </span>
-              </li>
-            <% end %>
-          </ul>
-        </div>
       <% end %>
+
+      <div style="max-height: 160px; overflow: auto; border:solid 1px #e8e8e8; padding:5px; background-color:white;">
+        <ul class="language_list">
+          <% @application_languages.each do |language| %>
+            <li onClick="Tr8n.Dispatcher.postMessage({'subject': 'language_selector', 'action': 'change', 'locale': '<%=language.locale%>'}, '<%=params[:origin]%>')">
+
+              <!--<% if Tr8n::Config.enable_language_stats? %>-->
+                <!--<span style="font-size:8px; <%=tr8n_style_attribute_tag('float', 'right')%>; color:#ccc;"><%= "#{language.default? ? '100' : (language.completeness || 0)}%" %></span>-->
+              <!--<% end %>-->
+
+              <%= tr8n_language_flag_tag(language) %>
+
+              <span dir="ltr">
+              <%= language.full_name %>
+            </span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
     
     <div style="padding-bottom:40px;">

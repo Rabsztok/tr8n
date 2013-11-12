@@ -24,10 +24,6 @@
 						    <td style="text-align:right;"><%=Tr8n::Language.count%></td>
 							</tr>
 							<tr>
-								<td style=""><%=trl("Enabled Languages")%></td>
-						    <td style="text-align:right;"><%=Tr8n::Language.enabled_languages.count%></td>
-							</tr>
-							<tr>
 								<td style=""><%=trl("Translators")%></td>
 						    <td style="text-align:right;"><%=Tr8n::Translator.count%></td>
 							</tr>
@@ -47,18 +43,6 @@
 								<td style=""><%=trl("Sources")%></td>
 						    <td style="text-align:right;"><%=Tr8n::TranslationSource.count%></td>
 							</tr>
-
-							<tr>
-								<td style=""><%=trl("Cache Enabled")%></td>
-						    <td style="text-align:right;"><%=Tr8n::Cache.enabled?%></td>
-							</tr>
-
-							<% if Tr8n::Cache.enabled? %>
-							<tr>
-								<td style=""><%=trl("Cache Version")%></td>
-						    <td style="text-align:right;"><%=Tr8n::Cache.version%></td>
-							</tr>
-							<% end %>
 						</table>
 				</div>
 			</div>
