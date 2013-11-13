@@ -11,34 +11,129 @@
       <%=tra("You currently don't have any assignments") %>
     </div>
   <% else %>
-    <div class="section">
-      <table class="table table-hover">
-        <thead>
-        <tr>
-          <th style=""><%=tra("Name") %></th>
-          <th style="text-align:right"><%=tra("Sections") %></th>
-          <th style="text-align:right"><%=tra("Languages") %></th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @components.each do |comp| %>
-          <tr>
-            <td>
-              <%=comp.name%>
-            </td>
-            <td style="text-align:right">
-              <%=link_to(comp.sources.count, :action=>:view, :id => comp.id)%>
-            </td>
-            <td style="text-align:right">
-              <%=link_to(comp.translators.count, :action=>:translators, :id => comp.id)%>
-            </td>
-          </tr>
+
+
+    <div class="tr8n tr8n_container">
+      <div class="section grey">
+        <div class="tr8n_float_right" style="padding-right:5px;">
+          <%=tr8n_help_icon_tag("Site Map") %>
+        </div>
+
+        <div class="tr8n_text_align_left" style="padding-top:5px;padding-bottom:20px;font-size:12px;">
+          <%=tra("This is a list of your assignments.") %>
+          <%=tra("Each assignment contains one or more sections.") %> <%= tra("Each section correspond to a page or a module of the application.") %>
+        </div>
+
+        <% if @editable %>
+          <div style="text-align:right">
+            <%=link_to(tra("Add Components To Site Map"), {:action => :add_components_modal}, {"data-toggle" => "dynamic_modal", :class => "btn btn-primary"})%>
+          </div>
         <% end %>
-        </tbody>
-      </table>
-    </div>
+      </div>
+
+      <% if @components.empty? %>
+        <%=tra("The site map has not been setup for this application yet.") %>
+
+        <% if @editable %>
+          <%=tra("[link: Click here] to add a component to the site map.", :link => lambda{|t| link_to(t, {:action => :add_components_modal}, {"data-toggle" => "dynamic_modal"})}) %>
+        <% end %>
+      <% end %>
+
+      <% @components.each_with_index do |comp, index| %>
+          <% languages = comp.translator_languages(tr8n_current_translator) %>
+          <div class="section grey">
+            <div class="section_title">
+              <div style="float:right; font-size:13px; font-weight: normal">
+                <%= tra("You have been requested to translate the following {count|section} to {languages}", :count => comp.component_sources.count, :languages => [languages.collect{|lang| lang.english_name}]) %>
+              </div>
+              <%=link_to(comp.name || "unnamed", :controller => "/tr8n/app/phrases", :action => :index, :component_id => comp.id)%>
+            </div>
+            <div>
+              <div style="padding-bottom:10px; color: #888; font-size:11px;">
+                <div style="float:right;font-size:12px;">
+                </div>
+                <%=comp.description %>
+              </div>
+              <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <% languages.each_with_index do |lang, index| %>
+                    <% next if index > 1 %>
+                    <th style="color:#888; font-weight:normal; text-align:center; border-right:1px solid #eee; border-left:1px solid #eee;" colspan="3">
+                      <%= tr8n_language_flag_tag(lang) %>
+                      <%=lang.english_name %>
+                    </th>
+                  <% end %>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                  <th style="color:#888; font-weight:normal;"><%=tra("Section") %></th>
+                  <th style="color:#888; font-weight:normal; text-align:right"><%=tra("Phrases") %></th>
+                  <% languages.each_with_index do |lang, index| %>
+                    <% next if index > 1 %>
+                    <th style="color:#888; font-weight:normal; text-align:right;  border-left:1px solid #eee;">
+                      <%=tra("Not Translated")%>
+                    </th>
+                    <th style="color:#888; font-weight:normal; text-align:right">
+                      <%=tra("Pending")%>
+                    </th>
+                    <th style="color:#888; font-weight:normal; text-align:right; border-right:1px solid #eee">
+                      <%=tra("Approved")%>
+                    </th>
+                  <% end %>
+                </tr>
+                </thead>
+                <tbody>
+                <% comp.component_sources.each do |comp_src| %>
+                  <% src = comp_src.translation_source %>
+                    <tr>
+                      <td>
+                        <i style="font-size:25px; padding-right:8px;">&middot;</i>
+                        <%=link_to(src.name || src.source, {:controller => "/tr8n/app/phrases", :action => :index, :component_id => comp.id, :source_id => src.id})%>
+                      </td>
+                      <td style="text-align:right;">
+                        <%=link_to(src.translation_keys.count, :controller => "/tr8n/app/phrases", :action => :index, :source_id => src.id)%>
+                      </td>
+                      <% languages.each_with_index do |lang, index| %>
+                        <% next if index > 1 %>
+
+                        <td style="text-align:right; border-left:1px solid #eee;">
+                          <%=link_to(comp.missing_translations_for_source_and_language(src, lang), {:controller => "/tr8n/app/phrases", :action => :index, :component_id => comp.id, :source_id => src.id, :locale => lang.locale, :phrase_type=>:without})%>
+                        </td>
+                        <td style="text-align:right">
+                          <%=link_to(comp.pending_translations_for_source_and_language(src, lang), {:controller => "/tr8n/app/phrases", :action => :index, :component_id => comp.id, :source_id => src.id, :locale => lang.locale, :phrase_type=>:with, :phrase_lock=>:unlocked})%>
+                        </td>
+                        <td style="text-align:right; border-right:1px solid #eee;">
+                          <%=link_to(comp.locked_translations_for_source_and_language(src, lang), {:controller => "/tr8n/app/phrases", :action => :index, :component_id => comp.id, :source_id => src.id, :locale => lang.locale, :phrase_type=>:with, :phrase_lock=>:locked})%>
+                        </td>
+                      <% end %>
+                    </tr>
+
+                <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      <% end %>
+
   <% end %>
 
   <%= render :partial => "/tr8n/common/footer" %>
 
 <% end %>
+
+<style>
+  .metrics {
+    width: 100%;
+  }
+  .metrics td {
+    padding:3px;
+    text-align:left;
+  }
+  .metrics th {
+    padding:3px;
+    text-align:left;
+  }
+
+</style>

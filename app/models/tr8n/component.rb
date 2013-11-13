@@ -158,6 +158,30 @@ class Tr8n::Component < ActiveRecord::Base
     Tr8n::Cache.delete(cache_key)
   end
 
+  def translator_languages(translator)
+    (languages & translator.languages)
+  end
+
+  def missing_translations_for_source_and_language(source, language)
+    @translation_keys = Tr8n::TranslationKey.where("tr8n_translation_keys.id in (select tr8n_translation_key_sources.translation_key_id from tr8n_translation_key_sources where tr8n_translation_key_sources.translation_source_id  = ?)", source.id)
+    @translation_keys = @translation_keys.where("tr8n_translation_keys.id not in (select tr8n_translations.translation_key_id from tr8n_translations where tr8n_translations.language_id = ?)", language.id)
+    @translation_keys.count
+  end
+
+  def pending_translations_for_source_and_language(source, language)
+    @translation_keys = Tr8n::TranslationKey.where("tr8n_translation_keys.id in (select tr8n_translation_key_sources.translation_key_id from tr8n_translation_key_sources where tr8n_translation_key_sources.translation_source_id  = ?)", source.id)
+    @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translations.translation_key_id from tr8n_translations where tr8n_translations.language_id = ?)", language.id)
+    @translation_keys = @translation_keys.where("tr8n_translation_keys.id not in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", language.id, true)
+    @translation_keys.count
+  end
+
+  def locked_translations_for_source_and_language(source, language)
+    @translation_keys = Tr8n::TranslationKey.where("tr8n_translation_keys.id in (select tr8n_translation_key_sources.translation_key_id from tr8n_translation_key_sources where tr8n_translation_key_sources.translation_source_id  = ?)", source.id)
+    @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translations.translation_key_id from tr8n_translations where tr8n_translations.language_id = ?)", language.id)
+    @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", language.id, true)
+    @translation_keys.count
+  end
+
   def to_api_hash(opts = {})
     {
       :key => self.key,
