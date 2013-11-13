@@ -43,7 +43,8 @@ module Tr8n
     def tr8n_language_flag_tag(lang = Tr8n::RequestContext.current_language, opts = {})
       return "" unless Tr8n::RequestContext.current_application.feature_enabled?(:language_flags)
       return "" unless lang
-      html = image_tag(lang.flag_url, :style => "vertical-align:middle;", :title => lang.native_name)
+      style = opts[:style] || "vertical-align:middle;"
+      html = image_tag(lang.flag_url, :style => style, :title => lang.native_name)
       html << "&nbsp;".html_safe 
       html.html_safe
     end

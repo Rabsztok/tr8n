@@ -26,7 +26,8 @@ class Tr8n::App::ForumController < Tr8n::App::BaseController
   before_filter :validate_current_translator
   
   def index
-    @topics = Tr8n::Forum::Topic.where("tr8n_forum_topics.language_id = ? or tr8n_forum_topics.language_id is null or tr8n_forum_topics.id in (select tr8n_forum_topic_languages.topic_id from tr8n_forum_topic_languages where tr8n_forum_topic_languages.language_id = ?)", tr8n_current_language.id, tr8n_current_language.id)
+    @topics = Tr8n::Forum::Topic.where("tr8n_forum_topics.application_id = ?", tr8n_selected_application.id)
+    @topics = @topics.where("tr8n_forum_topics.language_id = ? or tr8n_forum_topics.language_id is null or tr8n_forum_topics.id in (select tr8n_forum_topic_languages.topic_id from tr8n_forum_topic_languages where tr8n_forum_topic_languages.language_id = ?)", tr8n_current_language.id, tr8n_current_language.id)
     @topics = @topics.order("created_at desc").page(page).per(per_page)
   end
 
@@ -35,7 +36,7 @@ class Tr8n::App::ForumController < Tr8n::App::BaseController
       if params[:id]
         topic = Tr8n::Forum::Topic.find_by_id(params[:id])
       else
-        topic = Tr8n::Forum::Topic.create(:translator => tr8n_current_translator, :topic => params[:topic])
+        topic = Tr8n::Forum::Topic.create(:application => tr8n_selected_application, :translator => tr8n_current_translator, :topic => params[:topic])
         unless params[:locales].blank?
           params[:locales].split(',').each do |locale|
             lang = Tr8n::Language.by_locale(locale)

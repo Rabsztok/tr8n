@@ -20,24 +20,13 @@
 
     </div>
 
-    <!-- div class="section blue">
-      <%= form_tag({}, {:method => :get, :id => "translations_search_form"}) do %>
-        <%=hidden_field_tag(:section_key, @section_key) %>
-        <div class="tr8n_float_right">
-          <button type="submit" class="btn btn-primary" onClick="Tr8n.Effects.submit('translations_search_form'); return false;">
-            <%=tra("Search")%>
-          </button>
-        </div>
-
-        <div class="tr8n_text_align_left">
-          <%=text_field_tag(:search, params[:search], {:style => "width:90%;font-size:12px;height:20px;background: white url(/assets/tr8n/icn_search.png) right no-repeat; padding-right: 20px; border-radius:10px;", :placeholder => trla("Search translators")})%>
-        </div>
-
-        <div class="tr8n_text_align_left" style="margin-top:10px; padding:3px; font-size:11px; color:#666; font-weight:bold;">
-          <%=select_tag(:language, options_for_select([["all languages", "all"]] + Tr8n::Language.options, params[:language]))%>
-        </div>
-      <% end %>
-    </div -->
+    <!--<div class="section blue">-->
+      <!--<%= form_tag({}, {:method => :get, :id => "translations_search_form"}) do %>-->
+        <!--<div class="tr8n_text_align_left" style="margin-top:10px; padding:3px; font-size:11px; color:#666; font-weight:bold;">-->
+          <!--<%=select_tag(:language, options_for_select([["all languages", "all"]] + Tr8n::Language.options, params[:language]))%>-->
+        <!--</div>-->
+      <!--<% end %>-->
+    <!--</div>-->
 
     <div class="">
       <%= tr8n_paginator_tag(@translators, :subject => 'translator') if @translators.any? %>
@@ -47,33 +36,31 @@
         <tr>
           <th><%=tra("Name") %></th>
           <th><%=tra("Languages") %></th>
-          <th><%=tra("Level") %></th>
-          <th><%=tra("Translations") %></th>
-          <th><%=tra("Votes") %></th>
-          <th><%=tra("Rank") %></th>
+          <th><%=tra("Manager") %></th>
+          <th style="text-align:right"><%=tra("Translations") %></th>
+          <th style="text-align:right"><%=tra("Level") %></th>
         </tr>
         </thead>
         <tbody>
         <% @translators.each do |translator| %>
           <tr>
             <td style="vertical-align:top">
-              <div style="float:left;"><%=tr8n_user_mugshot_tag(translator, :linked => true)%> &nbsp;</div>
+              <div style="float:left;"><%=tr8n_user_mugshot_tag(translator, :linked => false)%> &nbsp;</div>
               <%=link_to(translator.name, :action => :view, :id => translator.id)%>
+              <br>
+              <%=tr8n_translator_rank_tag(translator)%>
             </td>
             <td>
               <%=translator.languages.collect{|lang| lang.name}.join(', ')%>
             </td>
             <td>
+              <%=tr8n_selected_application.manager?(translator)%>
+            </td>
+            <td style="text-align:right">
+              <%=link_to(translator.translations.count, :controller  => "/tr8n/app/translators", :action => "translations", :id=>translator.id) %>
+            </td>
+            <td style="text-align:right">
               <%=translator.level%>
-            </td>
-            <td>
-              <%= translator.total_metric.total_translations %>
-            </td>
-            <td>
-              <%= translator.total_metric.total_votes %>
-            </td>
-            <td>
-              <%=tr8n_translator_rank_tag(translator)%>
             </td>
             <td style="text-align:right">
               <%=link_to("<i class='icon-remove'></i>".html_safe, {:action => :remove, :id => translator.id}, :confirm => trla("Are you sure you want to remove this translator from the application?"))%>

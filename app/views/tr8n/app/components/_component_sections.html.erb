@@ -8,9 +8,42 @@
   <li class="active"><%=link_to(@component.name, :action => :view, :id => @component.id) %></li>
 </ul>
 
+
+<div class="section blue">
+  <table>
+    <tr>
+      <th style="width:120px;padding:3px;text-align:left;vertical-align:middle;font-weight:bold;"><%=tra("Key:")%></th>
+      <td style="padding:3px;">
+        <%=@component.key%>
+      </td>
+    </tr>
+    <tr>
+      <th style="width:120px;padding:3px;text-align:left;vertical-align:middle;font-weight:bold;"><%=tra("Name:")%></th>
+      <td style="padding:3px;">
+        <%=@component.name%>
+      </td>
+    </tr>
+    <tr>
+      <th style="width:120px;padding:3px;text-align:left;vertical-align:middle;font-weight:bold;"><%=tra("Description:")%></th>
+      <td style="padding:3px;">
+        <%=@component.description%>
+      </td>
+    </tr>
+    <tr>
+      <th style="width:120px;padding:3px;text-align:left;vertical-align:middle;font-weight:bold;"><%=tra("State:")%></th>
+      <td style="padding:3px;">
+        <%=@component.state%>
+      </td>
+    </tr>
+  </table>
+  <div style="text-align: right; padding-top:20px;">
+    <%=link_to(tra("Edit Component"), {:action => :component_modal, :id => @component.id}, {"data-toggle" => "dynamic_modal", "class" => "btn btn-small"})%>
+  </div>
+</div>
+
 <ul class="nav nav-tabs" style="padding-left:10px;padding-right:10px;">
   <% [
-         [nil, "Sources", ["view"], true],
+         [nil, "Sections", ["view"], true],
          [nil, "Languages", ["languages"], true],
          [nil, "Translators", ["translators"], true],
      ].each do |tab| %>

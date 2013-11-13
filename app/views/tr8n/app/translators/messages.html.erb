@@ -3,29 +3,38 @@
   <%= render :partial => "/tr8n/app/common/header" %>
   <%=render(:partial => "view_sections") %>
 
-  <div class="section">
-    <%= tr8n_paginator_tag(@messages, :subject => 'message') if @messages.any? %>
+  <div class="section grey">
+    <%=tra("This translator has submitted the following forum messages.") %>
+  </div>
 
-    <table class="table table-hover ">
-      <thead>
-      <tr>
-        <th style="width:150px;"><%=tra("Date") %></th>
-        <th><%=tra("Message") %></th>
-      </tr>
-      </thead>
-      <tbody id="languages" data-update-url="/tr8n/translator/settings/update_languages_order">
-      <% @messages.each do |m| %>
+  <div class="section">
+    <% if @messages.empty? %>
+      <%= tra("No messages have been submitted.") %>
+    <% else %>
+      <%= tr8n_paginator_tag(@messages, :subject => 'message') %>
+
+      <table class="table table-hover ">
+        <thead>
         <tr>
-          <td>
-            <%= m.created_at.tr(:date_time) %>
-          </td>
-          <td>
-            <%=m.message%>
-          </td>
+          <th style="width:150px;"><%=tra("Date") %></th>
+          <th><%=tra("Message") %></th>
         </tr>
-      <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody id="languages" data-update-url="/tr8n/translator/settings/update_languages_order">
+        <% @messages.each do |m| %>
+          <tr>
+            <td>
+              <%= m.created_at.tr(:date_time) %>
+            </td>
+            <td>
+              <%=m.message%>
+            </td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+
+    <% end %>
   </div>
 
   <%= render :partial => "/tr8n/app/common/footer" %>

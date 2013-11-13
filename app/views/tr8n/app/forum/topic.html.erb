@@ -25,8 +25,13 @@
         </div>
 
         <div class="tr8n_text_align_left" style="color:grey;font-size:12px;font-style:italic;padding-top:3px;padding-bottom:3px;">
-           <%= tra("Started by {user} on {date}", "",
-                {:user => [@topic.translator.user, tr8n_user_tag(@topic.translator, :linked => true)], :date => @topic.created_at.trl}) %>
+           <%= tra("Started by {user} on {date}", {:user => [@topic.translator.user, tr8n_user_tag(@topic.translator, :linked => true)], :date => @topic.created_at.trl}) %>
+
+          <% if @topic.languages.any? %>
+            <%= tra("featured in {languages}", :languages => [@topic.languages.collect{|l| l.english_name}]) %>
+          <% else %>
+            <%= tra("featured in all languages") %>
+          <% end %>
         </div>
       </div>
       <%= render :partial => "messages" %>

@@ -17,11 +17,13 @@
     <div class="tr8n_text_align_left" style="padding-top:5px;font-size:12px;">
       <%= tra("Application sources are groups of translation keys.") %>
       <%= tra("Most of the application sources are dynamically generated from the source code.") %>
-      <%= tra("Usually keys are grouped into sources by a page.") %> <%= tra("But a single page can also contain multiple sources.") %>
+      <%= tra("Usually keys are grouped into sources by page.") %>
+      <%= tra("But a single page can also contain multiple sources.") %>
       <%= tra("Administrators and managers can manually create sources and assign keys to them.") %>
+      <%= tra("Once a source is added to a component, it is called a component section.") %>
 
       <div style="text-align: right; padding-top:20px;">
-        <%=link_to("Create New Source", {:action => :source_modal, :forward_to => "sources"}, {"class" => "btn", "data-toggle" => "dynamic_modal"})%>
+        <%=link_to("Create New Source", {:action => :source_modal, :forward_to => "sources"}, {"class" => "btn btn-primary", "data-toggle" => "dynamic_modal"})%>
       </div>
     </div>
 
@@ -91,6 +93,7 @@
 
       <div style="padding-top:25px; padding-bottom: 10px;">
         <div style="float:right">
+          <%=link_to("Delete Empty Sources", {:action => :delete_empty_sources}, {"class" => "btn btn-warning", :confirm => trla("Are you sure you want to delete all empty sources?")})%>
           <%=link_to_function(tra("Delete"), "deleteSources()", {"class" => "btn btn-danger"})%>
         </div>
         <%=link_to_function(tra("Add To Component..."), "addSelectedSourcesToComponent()", {"class" => "btn"})%>

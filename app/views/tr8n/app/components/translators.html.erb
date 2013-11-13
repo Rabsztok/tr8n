@@ -18,7 +18,6 @@
       <%= tra("Administrators and managers can manually create sources and assign keys to them.") %>
 
       <div style="text-align: right; padding-top:20px;">
-        <%=link_to(tra("Edit Component"), {:action => :component_modal, :id => @component.id}, {"data-toggle" => "dynamic_modal", "class" => "btn btn-small"})%>
         <%=link_to(tra("Assign All Application Translators"), {:action => :add_all_translators, :id => @component.id}, {:confirm=>trla("Are you sure you want to add all application translators to this component?"),"class" => "btn btn-small"})%>
         <%=link_to(tra("Assign Translators"), {:action => :add_translators_modal, :id => @component.id}, {"data-toggle" => "dynamic_modal", "class" => "btn btn-small btn-primary"})%>
       </div>
@@ -36,9 +35,6 @@
           <th><%=tra("Name") %></th>
           <th><%=tra("Languages") %></th>
           <th><%=tra("Level") %></th>
-          <th><%=tra("Translations") %></th>
-          <th><%=tra("Votes") %></th>
-          <th><%=tra("Rank") %></th>
         </tr>
         </thead>
         <tbody>
@@ -46,23 +42,15 @@
           <% translator = comp_t.translator %>
           <tr>
             <td style="vertical-align:top">
-              <div style="float:left;"><%=tr8n_user_mugshot_tag(translator, :linked => true)%> &nbsp;</div>
-              <%=link_to(translator.name, :controller => "/tr8n/translator/dashboard", :id => translator.id)%>
+              <div style="float:left;"><%=tr8n_user_mugshot_tag(translator, :linked => false)%> &nbsp;</div>
+              <%=link_to(translator.name, :controller => "/tr8n/app/translators", :action => :view, :id => translator.id)%><br>
+              <%=tr8n_translator_rank_tag(translator)%>
             </td>
             <td>
               <%=translator.languages.collect{|lang| lang.name}.join(', ')%>
             </td>
             <td>
               <%=translator.level%>
-            </td>
-            <td>
-              <%= translator.total_metric.total_translations %>
-            </td>
-            <td>
-              <%= translator.total_metric.total_votes %>
-            </td>
-            <td>
-              <%=tr8n_translator_rank_tag(translator)%>
             </td>
             <td style="text-align:right">
               <%=link_to("<i class='icon-remove'></i>".html_safe, {:action => :remove_translator, :id => comp_t.id}, {:confirm => trla("Are you sure you want to remove this translator from the component?")})%>

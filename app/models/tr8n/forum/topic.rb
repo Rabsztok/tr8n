@@ -42,11 +42,12 @@
 class Tr8n::Forum::Topic < ActiveRecord::Base
   self.table_name = :tr8n_forum_topics
   attr_accessible :translator_id, :language_id, :topic
-  attr_accessible :language, :translator
+  attr_accessible :language, :translator, :application
 
   # primary language
   belongs_to :language, :class_name => "Tr8n::Language"
   belongs_to :translator, :class_name => "Tr8n::Translator"
+  belongs_to :application, :class_name => "Tr8n::Application"
   
   has_many :messages, :class_name => "Tr8n::Forum::Message", :foreign_key => :topic_id, :dependent => :destroy
   has_many :topic_languages, :class_name => "Tr8n::Forum::TopicLanguage", :foreign_key => :topic_id, :dependent => :destroy

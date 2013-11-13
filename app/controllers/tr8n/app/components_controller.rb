@@ -86,6 +86,15 @@ class Tr8n::App::ComponentsController < Tr8n::App::BaseController
     @sources = @sources.page(page).per(per_page)
   end
 
+  def delete_empty_sources
+    selected_application.sources.each do |source|
+      next if source.translation_keys.count > 0
+      source.destroy
+    end
+
+    redirect_back
+  end
+
   def source_modal
     @source = Tr8n::TranslationSource.find_by_id(params[:id]) if params[:id]
     @source ||= Tr8n::TranslationSource.new

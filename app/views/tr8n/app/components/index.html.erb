@@ -11,6 +11,7 @@
 
       <div class="tr8n_text_align_left" style="padding-top:5px;padding-bottom:20px;font-size:12px;">
         <%=tra("This section provides a list of components configured for this application.") %>
+        <%=tra("Once a component is assigned to a translator it becomes an assignment.") %>
       </div>
 
       <div style="text-align:right">
@@ -26,9 +27,10 @@
         <table class="table table-hover">
           <thead>
           <tr>
-            <th style=""><%=tra("Keyword") %></th>
+            <th style=""><%=tra("Key") %></th>
             <th style=""><%=tra("Name") %></th>
-            <th style="text-align:right"><%=tra("Sources") %></th>
+            <th style=""><%=tra("State") %></th>
+            <th style="text-align:right"><%=tra("Sections") %></th>
             <th style="text-align:right"><%=tra("Languages") %></th>
             <th style="text-align:right"><%=tra("Translators") %></th>
             <th style=""></th>
@@ -42,6 +44,9 @@
               </td>
               <td>
                 <%=comp.name%>
+              </td>
+              <td>
+                <%=comp.state%>
               </td>
               <td style="text-align:right">
                 <%=link_to(comp.sources.count, :action=>:view, :id => comp.id)%>

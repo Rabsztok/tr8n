@@ -3,38 +3,42 @@
   <%= render :partial => "/tr8n/app/common/header" %>
   <%=render(:partial => "view_sections") %>
 
-  <div class="section">
-    <%= tr8n_paginator_tag(@assignments, :subject => 'assignment') if @assignments.any? %>
+  <div class="section grey">
+    <%=tra("This translator is currently working on the following assignments.") %>
+  </div>
 
-    <table class="table table-hover ">
-      <thead>
-      <tr>
-        <th style="width:150px;"><%=tra("Date") %></th>
-        <th><%=tra("Component") %></th>
-        <th><%=tra("Language") %></th>
-      </tr>
-      </thead>
-      <tbody id="languages" data-update-url="/tr8n/translator/settings/update_languages_order">
-      <% @assignments.each do |a| %>
+  <div class="section">
+    <% if @assignments.empty? %>
+      <%= tra("No assignments have been specified yet.") %>
+    <% else %>
+      <%= tr8n_paginator_tag(@assignments, :subject => 'assignment') %>
+
+      <table class="table table-hover ">
+        <thead>
         <tr>
-          <td>
-            <%= a.created_at.tr(:date_time) %>
-          </td>
-          <td>
-            <%= a.component.name%>
-          </td>
-          <td>
-            <% if a.language %>
-              <%= image_tag(a.language.flag_url, :style => "align:middle") %>  &nbsp;
-              <%= a.language.english_name%>
-            <% else %>
-              Not specified
-            <% end %>
-          </td>
+          <th style="width:150px;"><%=tra("Date Assigned") %></th>
+          <th><%=tra("Component") %></th>
+          <th><%=tra("Languages") %></th>
         </tr>
-      <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody id="languages" data-update-url="/tr8n/translator/settings/update_languages_order">
+        <% @assignments.each do |a| %>
+          <tr>
+            <td>
+              <%= a.created_at.tr(:date_time) %>
+            </td>
+            <td>
+              <%= link_to(a.component.name, :controller => "/tr8n/app/components", :action => :view, :id=>a.component.id) %>
+            </td>
+            <td>
+              <% languages = a.component.languages & @translator.languages %>
+              <%= languages.collect{|lang| lang.name}.join(', ') %>
+            </td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    <% end %>
   </div>
 
   <%= render :partial => "/tr8n/app/common/footer" %>

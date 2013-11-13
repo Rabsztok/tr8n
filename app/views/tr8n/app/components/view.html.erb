@@ -19,7 +19,6 @@
         <%= tra("This section shows all sources assigned to the component.") %>
 
         <div style="text-align: right; padding-top:20px;">
-          <%=link_to(tra("Edit Component"), {:action => :component_modal, :id => @component.id}, {"data-toggle" => "dynamic_modal", "class" => "btn btn-small"})%>
           <%=link_to(tra("Add Sources"), {:action => :add_sources_modal, :id => @component.id}, {"data-toggle" => "dynamic_modal", "class" => "btn btn-small btn-primary"})%>
         </div>
       </div>

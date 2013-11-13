@@ -3,8 +3,16 @@
   <%= render :partial => "/tr8n/app/common/header" %>
   <%=render(:partial => "view_sections") %>
 
+  <div class="section grey">
+    <%=tra("This translator has submitted the following votes.") %>
+  </div>
+
   <div class="section">
-    <%= tr8n_paginator_tag(@votes, :subject => 'vote') if @votes.any? %>
+    <% if @votes.empty? %>
+      <%= tra("No votes have been submitted.") %>
+    <% else %>
+
+    <%= tr8n_paginator_tag(@votes, :subject => 'vote') %>
 
     <table class="table table-hover ">
       <thead>
@@ -39,6 +47,8 @@
       <% end %>
       </tbody>
     </table>
+
+    <% end %>
   </div>
 
   <%= render :partial => "/tr8n/app/common/footer" %>

@@ -39,7 +39,7 @@
           <ul class="dropdown-menu">
             <% translator_applications.each do |app| %>
               <li>
-                <%=link_to({:app_id => app.id}, :style => "#{translator_applications.last != app ? "padding-bottom:10px;border-bottom:1px dashed #ccc" : ""}") do %>
+                <%=link_to({:controller => "/tr8n/app/phrases", :action => :index, :app_id => app.id}, :style => "#{translator_applications.last != app ? "padding-bottom:10px;border-bottom:1px dashed #ccc" : ""}") do %>
                   <% if app.default? %>
                     <div style="float:right;padding-top:5px;"><%=image_tag("tr8n/lock.png")%></div>
                   <% end %>
