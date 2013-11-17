@@ -31,7 +31,7 @@ defaults:
   enable_language_stats:      true      # shows percent completion of a settings
 
   enable_admin_translations:  true      # registers tr8n admin keys in the system
-  enable_admin_inline_mode:   true      # allows tr8n engine sections to be inline translated
+  enable_admin_inline_mode:   false     # allows tr8n engine sections to be inline translated
 
   enable_language_cases:      true      # enables support for settings cases
   enable_client_sdk:          false     # allows javascript to use tr8nProxy object
@@ -54,8 +54,8 @@ defaults:
   # 
   # Put your API key in the box below.
   #############################################################################
-  enable_google_suggestions:  false      # uses google for suggestions
-  google_api_key: "YOUR GOOGLE API KEY"  # get this API key from Google.
+  enable_google_suggestions: true      # uses google for suggestions
+  google_api_key: "AIzaSyBvL_IjAhFwoC2oixepTmju9UHZnZiA7YI"  # get this API key from Google.
 
   #############################################################################
   # Featured languages can be added as a bottom strip bar on all pages using
@@ -109,7 +109,7 @@ defaults:
     enabled:                  false
     adapter:                  ActiveSupport::Cache
     store:                    ['dalli_store', 'localhost:11211']
-    version:                  'dev:0' # you can change the version to invalidate the cache
+    version:                  '0' # you can change the version to invalidate the cache
 
   #############################################################################
   # By default, Tr8n will use its own logger. If you set it to false,  
@@ -118,13 +118,13 @@ defaults:
   logger:
     enabled:                  true
     log_path:                 "log/tr8n.log"          # location of the log file
-    enable_paranoia_mode:     true                  # logs every dashboard action
+    enable_paranoia_mode:     false                   # logs every dashboard action
 
   #############################################################################
   # Site Integration Settings
   #############################################################################
   site_info:                  # used by the embedded mode
-    title:                    "Tr8n Service"                    # site title - provide your site title here
+    title:                    "Tr8n Translation Service"        # site title - provide your site title here
     contact_email:            "admin@tr8nhub.com"               # contact email for questions about translations
     base_url:                 "http://localhost:3000"           # base site url
     current_locale_method:    "current_locale"                  # application controller method that sets and returns current locale
@@ -133,9 +133,9 @@ defaults:
     default_locale:           "en-US"                           # locale of the site default settings
     sitemap_path:             "/config/tr8n/site/sitemap.json"  # location of the sitemap definition file
     splash_screen:            "/tr8n/common/splash_screen"      # location of the Tr8n splash screen  
-    tr8n_layout:              "application"                     # layout for the tr8n pages - change it to your layout
+    tr8n_layout:              "tr8n"                            # layout for the tr8n pages - change it to your layout
     tr8n_helpers:             []                                # if you need to add extra helpers
-    admin_layout:             "application"                     # layout to be used for the admin user interface - change it to your layout
+    admin_layout:             "tr8n_admin"                      # layout to be used for the admin user interface - change it to your layout
     admin_helpers:            []                                # if you need to add extra helpers
     before_filters:           []                                # filters from application controller
     skip_before_filters:      []                                # filters from application controller
@@ -166,7 +166,7 @@ defaults:
     translation_threshold:    1
 
     viewing_user_token:       "viewing_user"
-    translation_rank_styles:
+    translation_rank_styles:  
       -1000..-5:              "color:red;font-weight:bold;"
       -4..-1:                 "color:red;"
       1..10:                  "color:green;"

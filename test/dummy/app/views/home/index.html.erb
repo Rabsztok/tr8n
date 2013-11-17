@@ -1,6 +1,6 @@
 <style>
     h3 span {
-        background:#F7F7F7;
+        background:#FFF;
         padding:5px 15px 5px 15px;
     }
 </style>
@@ -9,7 +9,7 @@
     <div class="text-center">
         <%= image_tag('tr8n_logo.png') %>
     </div>
-    <h2 class="text-center"><%= tr("Welcome to Tr8n Translation Engine") %></h2>
+    <h2 class="text-center"><%= tr("Welcome to Tr8n Service Sample Application") %></h2>
     <p class="text-center">
         <%= tr("Tr8n Translation Engine provides you with the tools to translate your application into any numer of languages.") %>
         <%= tr("This sample application demonstrates some of Tr8n's capabilities.") %>
@@ -17,7 +17,7 @@
     <br>
     <% unless tr8n_current_translator %>
         <p class="text-center">
-            <a href="/signup" class="btn btn-large"><%= tr("Sign up to get started today") %></a>
+            <a href="/signup" class="btn btn-large btn-success"><%= tr("Sign up to get started now!") %></a>
         </p>
     <% end %>
 </div>

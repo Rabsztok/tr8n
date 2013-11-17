@@ -373,7 +373,7 @@ end</code></pre>
         <div class="title">results in</div>
         <div class="content">
           <% [[male], [male, female]].each do |users| %>
-            <%=tr("{users||likes, like} this photo", :users => [users]) %><br>
+            <%=tr("{users||likes, like} this photo", :users => [users, [:name]]) %><br>
           <% end %>
         </div>
       </div>
