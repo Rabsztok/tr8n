@@ -21,12 +21,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class HomeController < ApplicationController
-  
+class WelcomeController < ApplicationController
+
   def index
-    if current_user and not params[:translate]
-      redirect_to("/tr8n/app/phrases")
-    end
+    render :layout=>false
   end
 
 end

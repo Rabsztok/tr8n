@@ -172,7 +172,7 @@ module Tr8n
       end
 
       def substitute(translation_key, language, label, values = {}, options = {})
-        object = values[key]
+        object = Tr8n::Tokens::Base.token_object(values, key)
 
         unless object
           raise Tr8n::Exception.new("Missing value for a token: #{full_name}")
@@ -198,7 +198,7 @@ module Tr8n
 
         substitution_value = [] 
         if displayed_in_translation?
-          substitution_value << token_value(object, options, language) 
+          substitution_value << token_value(values[key], options, language)
           substitution_value << " " 
         end
         substitution_value << value

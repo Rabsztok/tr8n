@@ -150,8 +150,18 @@
       ],
       "token_mapping": [
         "unsupported",
-        "unsupported",
-        "unsupported",
+        {
+          "male": "{$0}",
+          "female": "{$0}",
+          "unknown": "{$0}",
+          "other": "{$1}"
+        },
+        {
+          "male": "{$0}",
+          "female": "{$1}",
+          "unknown": "{$0}",
+          "other": "{$2}"
+        },
         {
           "male": "{$0}",
           "female": "{$1}",
