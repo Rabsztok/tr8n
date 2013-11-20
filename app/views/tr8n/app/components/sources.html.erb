@@ -141,7 +141,7 @@
 
   function deleteSources() {
     if (!confirm("<%=trla("Are you sure you want to delete all selected sources?") %>")) return;
-    location.href = "/tr8n/app/sitemap/delete_sources?sources=" + getSelectedSourceIds();
+    location.href = "/tr8n/app/components/delete_sources?sources=" + getSelectedSourceIds();
   }
 
   function addSelectedSourcesToComponent() {

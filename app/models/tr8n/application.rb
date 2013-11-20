@@ -285,6 +285,7 @@ class Tr8n::Application < ActiveRecord::Base
         :key => self.key,
         :name => self.name,
         :description => self.description,
+        :default_locale => default_language.locale
     }
 
     if opts[:definition]
