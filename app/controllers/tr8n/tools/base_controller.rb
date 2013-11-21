@@ -25,6 +25,7 @@ class Tr8n::Tools::BaseController < Tr8n::BaseController
 
   skip_before_filter :validate_guest_user
   skip_before_filter :validate_current_translator
+  skip_before_filter :validate_selected_application
 
   before_filter :validate_remote_application
 

@@ -26,7 +26,8 @@ class Tr8n::HelpController < Tr8n::BaseController
   skip_before_filter :validate_current_translator
   skip_before_filter :validate_guest_user
   skip_before_filter :validate_current_user
-  
+  skip_before_filter :validate_selected_application
+
   def index
 
   end

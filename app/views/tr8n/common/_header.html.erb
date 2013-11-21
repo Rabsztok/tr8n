@@ -19,7 +19,7 @@
 
       <ul class="nav nav-pills" id="application_list_menu" style="margin-bottom:-20px;padding-bottom:0px;margin-left:-10px;">
         <li class="dropdown" id="applications_dropdown" style="max-width:700px;">
-          <a class="dropdown-toggle"  id="applications_menu"  data-toggle="dropdown" href="#applications_dropdown" style="color:#666; font-size:25px;">
+          <a class="dropdown-toggle"  id="applications_menu"  data-toggle="dropdown" href="#applications_dropdown" style="color:#666; font-size:25px; line-height:25px;">
             <%= selected_application.name %>
             <% if selected_application.default? %>
               <%=image_tag("tr8n/lock.png", :style=>"vertical-align:top")%>
@@ -36,37 +36,37 @@
               </div>
             <% end %>
           </div>
-          <ul class="dropdown-menu">
-            <% translator_applications.each do |app| %>
-              <li>
-                <%=link_to({:controller => "/tr8n/app/phrases", :action => :index, :app_id => app.id}, :style => "#{translator_applications.last != app ? "padding-bottom:10px;border-bottom:1px dashed #ccc" : ""}") do %>
-                  <% if app.default? %>
-                    <div style="float:right;padding-top:5px;"><%=image_tag("tr8n/lock.png")%></div>
-                  <% end %>
-                  <div style="display:inline-block; width:70px; text-align: center; padding-top:10px;">
-                    <%=image_tag(app.logo_url, :style=>"max-width:50px;max-height:50px;") %>
-                  </div>
-                  <div style="display:inline-block; vertical-align: top; padding-left:10px;">
-
-                    <div style="font-size:16px; font-weight:bold; padding-top:5px;padding-bottom:5px;">
-                      <%= app.name %>
-                    </div>
-                    <% if app.description %>
-                      <div style="font-size:12px; color: #666; max-width:480px; white-space: normal;">
-                        <%= app.description %>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
-              </li>
-            <% end %>
-            <li class="divider"></li>
-            <li>
-              <div style="text-align:center">
-                <%=link_to(tra("Create New Application"), {:controller => "/tr8n/app/wizards", :action => :application}, {"class" => "btn", "style" => "width:90%;", "data-toggle" => "dynamic_wizard"})%>
+          <div class="dropdown-menu app_selector">
+            <div style="background:#eee;padding:10px;margin-top:-5px;border-top-left-radius:5px;border-top-right-radius:5px; text-weight:bold;">
+              <div style="float:right;vertical-align: middle;cursor:pointer;">&times;</div>
+              <%=tr("Switch Application") %>
+            </div>
+            <div style="max-height:450px; overflow:auto">
+              <table class="table table-hover app_selections" style="padding-bottom:0px;margin-bottom:0px;">
+              <% translator_applications.each do |app| %>
+                  <tr style="cursor:pointer;" onClick="location='/tr8n/home/index?app_id=<%=app.id%>';">
+                    <td style="width:10px;padding-right:0px;">
+                      <% if app == selected_application %>
+                        <i class="icon-ok"></i>
+                      <% end %>
+                    </td>
+                    <td style="width:30px; padding-right:0px;"><%=image_tag(app.logo_url, :style=>"max-width:25px;max-height:25px;") %></td>
+                    <td style="color:#666; font-size:12px;  padding-left:0px;"><%= app.name %></td>
+                    <td style="text-align:right; padding-right:5px;">
+                      <% if app.default? %>
+                        <%=image_tag("tr8n/lock.png")%>
+                      <% end %>
+                    </td>
+                  </tr>
+              <% end %>
+              </table>
+            </div>
+            <div>
+              <div style="text-align:left; padding:10px; border-top:1px solid #ccc;">
+                <%=link_to(tra("+ Create New Application"), {:controller => "/tr8n/app/wizards", :action => :application}, {"class" => "", "style" => "width:90%;", "data-toggle" => "dynamic_wizard"})%>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </li>
       </ul>
 
@@ -81,9 +81,18 @@
 </script>
 
 <style>
-  #application_list_menu li {
-    min-width: 600px;
+  .app_selector {
+    min-width: 400px;
   }
+
+  .app_selector a:hover {
+    text-decoration: none;
+  }
+
+  .app_selector a:hover {
+    text-decoration: none;
+  }
+
   .active a {
     background: #f5f5f5;
     border: 1px solid #eee;

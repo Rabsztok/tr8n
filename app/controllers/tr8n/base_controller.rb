@@ -62,34 +62,46 @@ module Tr8n
     def validate_selected_application
       return unless tr8n_current_translator
 
+      if tr8n_current_translator.applications.empty?
+        return redirect_to(:controller => "/tr8n/app/register", :action => :index)
+      end
+
       if params[:app_id]
-        @selected_application = Tr8n::Application.find_by_id(params[:app_id])
+        app = Tr8n::Application.find_by_id(params[:app_id])
 
-        unless @selected_application
-          @selected_application = tr8n_current_translator.applications.first
+        unless app
+          app = tr8n_current_translator.applications.first
+          session[:tr8n_selected_app_id] = app.id
           trfe("Invalid application id")
+          return
         end
 
-        session[:tr8n_selected_app_id] = @selected_application.id
-      elsif session[:tr8n_selected_app_id]
-        @selected_application = Tr8n::Application.find_by_id(session[:tr8n_selected_app_id])
-      end
-
-      unless @selected_application
-        if tr8n_current_translator.applications.empty?
-          Tr8n::RequestContext.container_application.add_translator(tr8n_current_translator)
-        end
-        @selected_application = tr8n_current_translator.applications.first
-        session[:tr8n_selected_app_id] = @selected_application.id
-      end
-
-      unless tr8n_current_user_is_admin?
-        unless tr8n_current_translator.applications.include?(@selected_application)
+        unless app.translators.include?(tr8n_current_translator)
+          app = tr8n_current_translator.applications.first
+          session[:tr8n_selected_app_id] = app.id
           trfe("You are not authorized to view this application")
-          @selected_application = tr8n_current_translator.applications.first
-          session[:tr8n_selected_app_id] = @selected_application.id
+          return
         end
+
+        at = Tr8n::ApplicationTranslator.by_application_and_translator(app, tr8n_current_translator)
+        at.touch if at
+
+        session[:tr8n_selected_app_id] = app.id
+        return
       end
+
+      if session[:tr8n_selected_app_id]
+        app = Tr8n::Application.find_by_id(session[:tr8n_selected_app_id])
+        unless app.translators.include?(tr8n_current_translator)
+          app = tr8n_current_translator.applications.first
+          trfe("You are not authorized to view this application")
+        end
+
+        return
+      end
+
+      app = tr8n_current_translator.applications.first
+      session[:tr8n_selected_app_id] = app.id
     end
 
     def translator_applications

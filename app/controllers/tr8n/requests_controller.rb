@@ -56,7 +56,7 @@ class Tr8n::RequestsController < Tr8n::BaseController
       if tr8n_current_user
         trfn("You have accepted request to translate application")
         @request.accept(tr8n_current_user)
-        return redirect_to(:controller => "/tr8n/app/phrases", :action => :index, :app_id => @request.application.id)
+        return redirect_to(:controller => "/tr8n/home")
       end
 
       return redirect_to("#{Tr8n::Config.signup_url}?id=#{@request.key}")

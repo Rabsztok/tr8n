@@ -22,7 +22,7 @@
 #++
 
 Tr8n::Engine.routes.draw do
-  [:dashboard, :awards, :forum, :glossary, :phrases, :sitemap, :translations, :translators, :wizards, :settings, :languages, :emails, :components].each do |ctrl|
+  [:dashboard, :awards, :forum, :glossary, :phrases, :sitemap, :translations, :translators, :wizards, :settings, :languages, :emails, :components, :register].each do |ctrl|
     match "app/#{ctrl}(/:action)", :controller => "app/#{ctrl}"
   end
 

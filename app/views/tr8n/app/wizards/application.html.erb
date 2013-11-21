@@ -1,6 +1,6 @@
 <%= tr8n_with_options_tag(:source => 'app/wizards/application') do %>
   <div class="wizard" id="new-application-wizard">
-    <h1><%=tra("Register New Application") %></h1>
+    <h1><%=tra("Create New Application") %></h1>
 
     <div class="wizard-card" data-cardname="card1">
       <h3><%=tra("Application Details") %></h3>
@@ -203,7 +203,7 @@
             wizard.showSubmitCard("success");
 
             window.setTimeout(function() {
-              location.reload();
+              location = "/tr8n/home/index";
             }, 500);
 
         }).fail(function() {

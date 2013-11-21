@@ -21,12 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-class Tr8n::HomeController < ApplicationController
+class Tr8n::HomeController < Tr8n::BaseController
 
   layout Tr8n::Config.site_info[:tr8n_layout]
-  
+
   def index
-    
+    redirect_to(:controller => "/tr8n/app/phrases", :action => :index)
   end
 
   def tokens

@@ -1,0 +1,101 @@
+<div style="padding-top:10px;padding-bottom:100px;">
+  <div class="row">
+    <div class="span5 offset3 well">
+      <legend><%= tr("Create a New Application") %></legend>
+      <p class="muted"><%=tr("To create a new application, please provide the following information:") %></p>
+
+      <%= form_for(@app, :as => :app, :url => {}, :html => {:method => :post, :id=>:app_form}) do |f| %>
+
+        <div style="padding-top:5px;padding-bottom:5px;">
+          <%= tr("Application Name") %>
+        </div>
+        <%=f.text_field :name, :class=>"input-block-level", :id=>"app_name" %>
+
+        <div style="padding-top:5px;padding-bottom:5px;">
+          <%= tr("Description") %>
+        </div>
+        <%=f.text_area :description, :class=>"input-block-level", :style=>"height:50px;", :id=>"description" %>
+
+        <div style="padding-top:5px;padding-bottom:5px;">
+          <%= tr("URL") %>
+        </div>
+        <%=f.text_field :url, :class=>"input-block-level", :id=>"url" %>
+
+
+        <legend><%= tr("Languages") %></legend>
+        <p>
+          <%=tra("What is the main language of your application?") %>
+        </p>
+
+        <%=hidden_field_tag(:default_locale, "") %>
+
+        <div class="control-group">
+          <select id="default_language" data-placeholder="Primary language" style="width:100%;" class="chzn-select">
+            <option value=""></option>
+            <% Tr8n::Language.enabled_languages.each do |lang| %>
+              <option <%="selected" if lang.default? %> value="<%=lang.locale%>"><%=lang.english_name%></option>
+            <% end %>
+          </select>
+        </div>
+
+        <p><%=tr("Please indicate what languages you would like to translate the app to:") %></p>
+
+        <%=hidden_field_tag(:locales, "") %>
+
+        <select id="new_locales" data-placeholder="Languages" multiple class="chzn-select" style="width:100%;">
+          <option value=""></option>
+          <% Tr8n::Language.enabled_languages.each do |lang| %>
+            <option value="<%=lang.locale%>"><%=lang.english_name%></option>
+          <% end %>
+        </select>
+        <p class="muted"><%=tr("Note: You will be able to add more later.") %></p>
+
+        <legend><%= tr("Translators") %></legend>
+        <p>
+          <%=tra("Optionally, enter a list of email addresses for translators you want to invite to help you translate your app.") %>
+        </p>
+
+        <%=text_field_tag(:translators, "", :style=>"") %>
+
+        <p class="muted"><%=tr("Note: You will be able to invite more later.") %></p>
+
+        <div style="margin-top:30px;">
+          <button type="submit" name="submit" onClick="$('#default_locale').val($('#default_language').val()); $('#locales').val($('#new_locales').val()); $('#app_form').submit();" class="btn btn-block btn-success btn-large"><%= tr("Create Application") %></button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%=javascript_include_tag("tr8n/vendor/jquery/chosen.jquery.js") %>
+<%=javascript_include_tag("tr8n/vendor/jquery/jquery.tagsinput.js") %>
+
+<script>
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
+  (function() {
+    $("#default_language").chosen({});
+    $("#new_locales").chosen({});
+
+
+    $('#translators').tagsInput({
+      'height':'100px',
+      'width':'460px',
+      'interactive':true,
+      'defaultText':'Enter email',
+      'onAddTag': function(tag) {
+        if (!validateEmail(tag)) {
+          alert("Invalid email address");
+          $('#new_application_translators').removeTag(tag);
+          return false;
+        }
+      }
+    });
+
+    $("#app_name").focus();
+
+  })();
+</script>

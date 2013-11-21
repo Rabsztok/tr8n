@@ -46,7 +46,7 @@
 
 class Tr8n::Application < ActiveRecord::Base
   self.table_name = :tr8n_applications
-  attr_accessible :key, :name, :description, :default_language
+  attr_accessible :key, :name, :description, :url, :default_language
 
   has_many :components, :class_name => 'Tr8n::Component', :order => "position asc", :dependent => :destroy
 

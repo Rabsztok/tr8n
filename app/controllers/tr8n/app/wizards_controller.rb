@@ -35,16 +35,6 @@ class Tr8n::App::WizardsController < Tr8n::App::BaseController
         app.save
       end
 
-      #domains = params[:domains].split("\n")
-      #
-      #if Tr8n::TranslationDomain.where("name in (?)", domains).any?
-      #  return render(:json => {"error" => tra("Application with this domain already exists. Please contact application administrator to be added to the application")}.to_json)
-      #end
-      #
-      #domains.each do |domain|
-      #  Tr8n::TranslationDomain.create(:name => domain, :application => app)
-      #end
-
       app.add_language(default_language)
       unless params[:locales].blank?
         params[:locales].each do |locale|
@@ -71,7 +61,7 @@ class Tr8n::App::WizardsController < Tr8n::App::BaseController
 
       session[:tr8n_selected_app_id] = app.id
 
-      return render(:json => {"status" => "Ok", "msg" => tra("[bold: {application}] was registered successfully.", :application => app.name)}.to_json)
+      return render(:json => {"status" => "Ok", "msg" => tra("[bold: {application}] was registered successfully.", "application" => app.name, "id" => app.id)}.to_json)
     end
 
     render :layout => false
