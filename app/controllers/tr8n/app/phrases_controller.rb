@@ -161,7 +161,7 @@ class Tr8n::App::PhrasesController < Tr8n::App::BaseController
 
     @comments = Tr8n::TranslationKeyComment.where("translation_key_id = ?", translation_key.id)
     @comments = @comments.where(:language_id => @language.id) if @language
-    @comments = @comments.order("created_at desc").page(page).per(per_page)
+    @comments = @comments.order("created_at asc").page(page).per(per_page)
     
     @grouping = {}
     if !params[:grouped_by].blank? and params[:grouped_by] != "nothing"

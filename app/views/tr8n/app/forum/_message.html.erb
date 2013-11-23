@@ -1,8 +1,8 @@
 <td class="tr8n_text_align_left"  style="padding:5px; width:50px;">
-  <%=tr8n_user_mugshot_tag(message.translator, :linked => true)%>
+  <%=tr8n_user_mugshot_tag(message.translator, :linked => false)%>
 </td>
 <td class="tr8n_text_align_left" style="padding:5px; width:100px;">
-  <%=tr8n_user_tag(message.translator, :linked => true)%>
+  <%=tr8n_user_tag(message.translator, :linked => false)%>
   <div class="tr8n_text_align_left" style="color:grey;font-size:10px;"><%=tr8n_when_string_tag(message.created_at).html_safe %></div>
   <div class="tr8n_text_align_left" style="font-size:10px;padding-top:5px;">
     <% if tr8n_current_user_is_translator? and message.translator == tr8n_current_translator %>  

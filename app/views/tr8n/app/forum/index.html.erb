@@ -24,10 +24,10 @@
             <tr style="<%=style%>">
               <td class="topic_value">
                 <div style="width:60px;display:inline-block; vertical-align: top; padding-top:5px;">
-                  <%=tr8n_user_mugshot_tag(topic.translator, :linked => true)%>
+                  <%=tr8n_user_mugshot_tag(topic.translator, :linked => false)%>
                 </div>
                 <div style="width:100px;display:inline-block; vertical-align: top">
-                  <%=tr8n_translator_tag(topic.translator, :linked => true)%>
+                  <%=tr8n_translator_tag(topic.translator, :linked => false)%>
                   <div style="font-size:11px;color:grey;<%=tr8n_style_attribute_tag('text-align', 'left')%>;">
                     <%=tr8n_when_string_tag(topic.created_at).html_safe %>
                   </div>

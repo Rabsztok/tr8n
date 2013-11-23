@@ -1,9 +1,9 @@
 <td style="padding:5px; width:180px;">
   <div style="width:60px;display:inline-block; vertical-align: top; padding-top:5px;">
-    <%=tr8n_user_mugshot_tag(comment.translator, :linked => true)%>
+    <%=tr8n_user_mugshot_tag(comment.translator, :linked => false)%>
   </div>
-  <div style="width:100px;display:inline-block; vertical-align: top">
-    <%=tr8n_translator_tag(comment.translator, :linked => true)%>
+  <div style="width:100px;display:inline-block; vertical-align: top;">
+    <%=tr8n_translator_tag(comment.translator, :linked => false)%>
     <div style="font-size:11px;color:grey;<%=tr8n_style_attribute_tag('text-align', 'left')%>;">
       <%=tr8n_when_string_tag(comment.created_at).html_safe %>
     </div>
@@ -16,7 +16,7 @@
     <%=tr8n_translator_rank_tag(comment.translator, nil, :style=>"width:10px;")%>
   </div>
 </td>
-<td class="tr8n_text_align_left" style="padding:5px; width:700px;vertical-align: top;">
+<td class="tr8n_text_align_left" style="padding:5px; width:700px;vertical-align: top; padding-left:20px;">
   <%=comment.toHTML %>
 </td>
 <td style="padding:5px; width:100px; vertical-align:top;" class="tr8n_text_align_right">

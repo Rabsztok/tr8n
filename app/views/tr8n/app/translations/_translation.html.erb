@@ -1,9 +1,9 @@
 <td class="tr8n_text_align_left" style="vertical-align:top; padding-top:5px; font-size:12px">
   <div style="width:60px;display:inline-block; vertical-align: top; padding-top:5px;">
-    <%=tr8n_user_mugshot_tag(translation.translator, :linked => true)%>
+    <%=tr8n_user_mugshot_tag(translation.translator, :linked => false)%>
   </div>
   <div style="width:100px;display:inline-block; vertical-align: top">
-    <%=tr8n_translator_tag(translation.translator, :linked => true)%>
+    <%=tr8n_translator_tag(translation.translator, :linked => false)%>
     <div style="font-size:11px;color:grey;<%=tr8n_style_attribute_tag('text-align', 'left')%>;">
       <%=tr8n_when_string_tag(translation.created_at).html_safe %>
     </div>
