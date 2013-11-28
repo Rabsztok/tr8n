@@ -31,7 +31,7 @@ class Tr8n::Api::ProxyController < Tr8n::Api::BaseController
 
   def boot
     uri = URI.parse(request.url)
-    @host = "#{uri.scheme}://#{uri.host}"
+    @host = "//#{uri.host}"
     @host += ":#{uri.port}" unless uri.port==80
 
     render(:partial => "/tr8n/app/js/boot", :formats => [:js], :content_type => "text/javascript")
