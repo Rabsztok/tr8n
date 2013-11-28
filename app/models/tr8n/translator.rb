@@ -374,23 +374,23 @@ class Tr8n::Translator < ActiveRecord::Base
     Tr8n::Config.translator_levels[level.to_s] || 'unknown'
   end
 
-  def follow(object)
-    Tr8n::TranslatorFollowing.find_or_create(self, object)
+  def follow(model)
+    Tr8n::TranslatorFollowing.find_or_create(self, model)
   end
 
-  def unfollow(object)
-    tf = Tr8n::TranslatorFollowing.where("object_type = ? and object_id = ?", object.class.name, object.id).first
+  def unfollow(model)
+    tf = Tr8n::TranslatorFollowing.where("model_type = ? and model_id = ?", model.class.name, model.id).first
     tf.destroy if tf
   end
 
   def followed_objects(type=nil)
     if type
-      following = Tr8n::TranslatorFollowing.find(:all, :conditions => ["translator_id = ? and object_type = ?", self.id, type])    
+      following = Tr8n::TranslatorFollowing.find(:all, :conditions => ["translator_id = ? and model_type = ?", self.id, type])
     else
       following = Tr8n::TranslatorFollowing.find(:all, :conditions => ["translator_id = ?", self.id])
     end 
 
-    following.collect{|f| f.object}
+    following.collect{|f| f.model}
   end
 
   def self.level_options

@@ -128,9 +128,10 @@ private
       return render_response(:error_description => "Invalid application secret", :error => :invalid_request)
     end
 
-    client_token = application.create_client_token
-    refresh_token = application.create_refresh_token(nil, client_token.scope)
-    render_response(:access_token => client_token.token, :refresh_token => refresh_token.token, :expires_in => (client_token.expires_at.to_i - Time.now.to_i))
+    client_token = application.find_or_create_client_token
+    #refresh_token = application.create_refresh_token(nil, client_token.scope)
+    #render_response(:access_token => client_token.token, :refresh_token => refresh_token.token, :expires_in => (client_token.expires_at.to_i - Time.now.to_i))
+    render_response(:access_token => client_token.token, :expires_in => (client_token.expires_at.to_i - Time.now.to_i))
   end
 
   # request token with grant_type = refresh_token

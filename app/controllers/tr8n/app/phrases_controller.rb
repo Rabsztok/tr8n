@@ -26,74 +26,10 @@ class Tr8n::App::PhrasesController < Tr8n::App::BaseController
   before_filter :init_breadcrumb
 
   def index
-    #@translation_keys = Tr8n::TranslationKey.for_params(params.merge(:application => selected_application, :component => @component, :source => @source))
-    #
-    ### get a list of all restricted keys
-    ##restricted_keys = Tr8n::TranslationKey.all_restricted_ids
-    ##
-    ### exclude all restricted keys
-    ##if restricted_keys.any?
-    ##  @translation_keys =  @translation_keys.where("id not in (?)", restricted_keys)
-    ##end
-    #
-    #@translation_keys = @translation_keys.order("created_at desc").page(page).per(per_page)
-    #
-    #if @translation_keys.size == 0
-    #  @translated = 0
-    #  @locked = 0
-    #else
-    #  @translated = Tr8n::RequestContext.current_language.total_metric.translation_completeness
-    #  @locked = Tr8n::RequestContext.current_language.completeness
-    #end
-
-    @translation_keys = Tr8n::TranslationKey.order("id desc")
-
-    if @source
-      @source_ids = [@source.id]
-    elsif @component
-      @source_ids = @component.sources.collect{|s| s.id}
-    else
-      @source_ids = selected_application.sources.collect{|s| s.id}
-    end
-
-    if @source_ids
-      if @source_ids.size > 0
-        @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translation_key_sources.translation_key_id from tr8n_translation_key_sources where tr8n_translation_key_sources.translation_source_id in (?))", @source_ids)
-      else
-        @translation_keys = @translation_keys.where("1=2")
-      end
-    end
-
-    unless params[:search].blank?
-      @translation_keys = @translation_keys.where("(lower(tr8n_translation_keys.label) like ? or lower(tr8n_translation_keys.description) like ?)", "%#{params[:search].downcase}%", "%#{params[:search].downcase}%")
-    end
-
-    if params[:phrase_type] == "with"
-      @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translations.translation_key_id from tr8n_translations where tr8n_translations.language_id = ?)", tr8n_current_language.id)
-
-      # if approved, ensure that translation key is locked
-      #if params[:phrase_status] == "approved"
-      #  @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", tr8n_current_language.id, true)
-      #
-      #  # if approved, ensure that translation key does not have a lock or unlocked
-      #elsif params[:phrase_status] == "pending"
-      #  @translation_keys = @translation_keys.where("tr8n_translation_keys.id not in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", tr8n_current_language.id, true)
-      #end
-
-    elsif params[:phrase_type] == "without"
-      @translation_keys = @translation_keys.where("tr8n_translation_keys.id not in (select tr8n_translations.translation_key_id from tr8n_translations where tr8n_translations.language_id = ?)", tr8n_current_language.id)
-
-    elsif params[:phrase_type] == "followed" and Tr8n::RequestContext.current_user_is_translator?
-      @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translator_following.object_id from tr8n_translator_following where tr8n_translator_following.translator_id = ? and tr8n_translator_following.object_type = ?)", tr8n_current_translator.id, 'Tr8n::TranslationKey')
-    end
-
-    if params[:phrase_lock] == "locked"
-      @translation_keys = @translation_keys.where("tr8n_translation_keys.id in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", tr8n_current_language.id, true)
-
-    elsif params[:phrase_lock] == "unlocked"
-      @translation_keys = @translation_keys.where("tr8n_translation_keys.id not in (select tr8n_translation_key_locks.translation_key_id from tr8n_translation_key_locks where tr8n_translation_key_locks.language_id = ? and tr8n_translation_key_locks.locked = ?)", tr8n_current_language.id, true)
-    end
-
+    @translation_keys = Tr8n::TranslationKey.for_params(selected_application, tr8n_current_language, tr8n_current_translator, params.merge(
+      :source => @source,
+      :component => @component
+    ))
 
     @translation_keys = @translation_keys.page(page).per(per_page)
   end

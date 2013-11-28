@@ -25,26 +25,26 @@
 #
 # Table name: tr8n_features
 #
-#  id             integer                        not null, primary key
-#  object_type    character varying(255)         
-#  object_id      integer                        
-#  keyword        character varying(255)         
-#  enabled        boolean                        
-#  created_at     timestamp without time zone    not null
-#  updated_at     timestamp without time zone    not null
+#  id            integer                        not null, primary key
+#  model_type    character varying(255)         
+#  model_id      integer                        
+#  keyword       character varying(255)         
+#  enabled       boolean                        
+#  created_at    timestamp without time zone    not null
+#  updated_at    timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_feats    (object_type, object_id) 
+#  tr8n_feats_model    (model_type, model_id) 
 #
 #++
 
 class Tr8n::Feature < ActiveRecord::Base
   self.table_name = :tr8n_features
 
-  attr_accessible :object, :keyword, :enabled
+  attr_accessible :model, :keyword, :enabled
 
-  belongs_to :object, :polymorphic => true
+  belongs_to :model, :polymorphic => true
 
   def self.application_defaults
     {
@@ -77,17 +77,17 @@ class Tr8n::Feature < ActiveRecord::Base
     }
   end
 
-  def self.defaults_for(object)
-    return application_defaults if object.is_a?(Tr8n::Application)
-    return translator_defaults if object.is_a?(Tr8n::Translator)
-    return language_defaults if object.is_a?(Tr8n::Language)
+  def self.defaults_for(model)
+    return application_defaults if model.is_a?(Tr8n::Application)
+    return translator_defaults if model.is_a?(Tr8n::Translator)
+    return language_defaults if model.is_a?(Tr8n::Language)
     {}
   end
 
-  def self.by_object(object, opts = {})
-    hash = defaults_for(object).clone
+  def self.by_object(model, opts = {})
+    hash = defaults_for(model).clone
 
-    feats = where("object_type = ? and object_id = ?", object.class.name, object.id).all
+    feats = where("model_type = ? and model_id = ?", model.class.name, model.id).all
     feats.each do |feat|
       hash[feat.keyword]["enabled"] = feat.enabled?
     end
@@ -101,18 +101,18 @@ class Tr8n::Feature < ActiveRecord::Base
     h
   end
 
-  def self.enabled?(object, keyword)
-    by_object(object)[keyword.to_s]["enabled"]
+  def self.enabled?(model, keyword)
+    by_object(model)[keyword.to_s]["enabled"]
   end
 
-  def self.toggle(object, keyword, flag)
-    feat = where("object_type = ? and object_id = ? and keyword = ?", object.class.name, object.id, keyword).first
-    defs = defaults_for(object)[keyword]
+  def self.toggle(model, keyword, flag)
+    feat = where("model_type = ? and model_id = ? and keyword = ?", model.class.name, model.id, keyword).first
+    defs = defaults_for(model)[keyword]
 
     if defs["enabled"] == flag
       feat.destroy if feat
     else
-      feat ? feat.update_attributes(:enabled => flag) : create(:object => object, :keyword => keyword, :enabled => flag)
+      feat ? feat.update_attributes(:enabled => flag) : create(:model => model, :keyword => keyword, :enabled => flag)
     end
 
     flag

@@ -124,7 +124,7 @@ module Tr8n
         # json["fallback_language"] = import_language(files, json["fallback"])
       end
 
-      language = Tr8n::Language.create_from_json(json)
+      language = create_language_from_json(json)
 
       #files[locale]= nil
 
@@ -233,6 +233,92 @@ module Tr8n
       end
 
     end
+
+    def self.create_context_rules(language, json)
+      return unless json
+
+      json.each do |key, ctx|
+        context = Tr8n::LanguageContext.create(
+          :language    => language,
+          :keyword     => key,
+          :description => ctx["description"],
+          :definition  => {
+           "keys"               => ctx["keys"],
+           "token_expression"   => ctx["token_expression"],
+           "variables"          => ctx["variables"],
+           "token_mapping"      => ctx["token_mapping"],
+           "default_rule"       => ctx["default_rule"],
+          }
+        )
+
+        if ctx["rules"]
+          ctx["rules"].each do |key, rl|
+            rule = Tr8n::LanguageContextRule.create(
+              :language_context => context,
+              :keyword          => key,
+              :description      => rl["description"],
+              :examples         => rl["examples"],
+              :definition       => {
+                "conditions"            =>  rl["rule"],
+                "conditions_expression" =>  Tr8n::RulesEngine::Parser.new(rl["rule"]).parse,
+              }
+            )
+          end
+        end
+      end
+    end
+
+    def self.create_language_cases(language, json)
+      return unless json
+
+      json.each do |key, ctx|
+        lang_case = Tr8n::LanguageCase.create(
+          :language    => language,
+          :keyword     => key,
+          :latin_name  => ctx["latin_name"],
+          :native_name => ctx["native_name"],
+          :description => ctx["description"],
+          :application => ctx["application"],
+        )
+
+        if ctx["rules"]
+          ctx["rules"].each_with_index do |rl, index|
+            #puts ["Registering: ", rl["conditions"], rl["operations"]]
+            rule = Tr8n::LanguageCaseRule.create(
+              :language_case    => lang_case,
+              :position         => index,
+              :description      => rl["description"],
+              :examples         => rl["examples"],
+              :definition       => {
+                "conditions"            =>  rl["conditions"],
+                "conditions_expression" =>  Tr8n::RulesEngine::Parser.new(rl["conditions"]).parse,
+                "operations"            =>  rl["operations"],
+                "operations_expression" =>  Tr8n::RulesEngine::Parser.new(rl["operations"]).parse,
+              }
+            )
+          end
+        end
+      end
+    end
+
+    def self.create_language_from_json(json)
+      language = Tr8n::Language.create(
+        :locale              => json["locale"],
+        :enabled             => true,
+        :right_to_left       => json["right_to_left"],
+        :curse_words         => json["curse_words"],
+        :english_name        => json["english_name"],
+        :native_name         => json["native_name"],
+        :google_key          => json["google_key"],
+        :myheritage_key      => json["myheritage_key"],
+        :facebook_key        => json["facebook_key"],
+        :fallback_language   => json["fallback_language"]
+      )
+      create_context_rules(language, json["context_rules"])
+      create_language_cases(language, json["language_cases"])
+      language
+    end
+
 
     # json support
     def self.load_json(file_path)

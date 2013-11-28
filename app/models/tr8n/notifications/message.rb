@@ -31,15 +31,15 @@
 #  actor_id         integer                        
 #  target_id        integer                        
 #  action           character varying(255)         
-#  object_type      character varying(255)         
-#  object_id        integer                        
+#  model_type       character varying(255)         
+#  model_id         integer                        
 #  viewed_at        timestamp without time zone    
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_notifs_obj       (object_type, object_id) 
+#  tr8n_notifs_model     (model_type, model_id) 
 #  tr8n_notifs_trn_id    (translator_id) 
 #
 #++
@@ -62,7 +62,7 @@ class Tr8n::Notifications::Message < Tr8n::Notification
     translators = translators.uniq - [message.translator]
 
     translators.each do |t|
-      create(:translator => t, :object => message, :actor => message.translator, :action => "replied_to_forum_topic")
+      create(:translator => t, :model => message, :actor => message.translator, :action => "replied_to_forum_topic")
     end
   end
 

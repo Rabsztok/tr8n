@@ -67,6 +67,8 @@ class Tr8n::TranslationKeySource < ActiveRecord::Base
       tks = where("translation_key_id = ? and translation_source_id = ?", translation_key.id, translation_source.id).first
       tks ||= begin
         translation_source.touch
+        # TODO: move it out eventually
+        Tr8n::ApplicationTranslationKey.find_or_create(translation_source.application, translation_key)
         create(:translation_key => translation_key, :translation_source => translation_source)
       end
     end  

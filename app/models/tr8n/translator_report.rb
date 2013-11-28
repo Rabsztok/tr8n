@@ -28,8 +28,8 @@
 #  id               integer                        not null, primary key
 #  translator_id    integer                        
 #  state            character varying(255)         
-#  object_id        integer                        
-#  object_type      character varying(255)         
+#  model_id         integer                        
+#  model_type       character varying(255)         
 #  reason           character varying(255)         
 #  comment          text                           
 #  created_at       timestamp without time zone    not null
@@ -43,61 +43,61 @@
 
 class Tr8n::TranslatorReport < ActiveRecord::Base
   self.table_name = :tr8n_translator_reports  
-  attr_accessible :translator_id, :state, :object_id, :object_type, :reason, :comment
-  attr_accessible :translator, :object
+  attr_accessible :translator_id, :state, :model_id, :model_type, :reason, :comment
+  attr_accessible :translator, :model
 
   belongs_to :translator, :class_name => "Tr8n::Translator"
-  belongs_to :object, :polymorphic => true
+  belongs_to :model, :polymorphic => true
 
-  def self.find_or_create(translator, object)
-    report_for(translator, object) || create(:translator => translator, :object => object)
+  def self.find_or_create(translator, model)
+    report_for(translator, model) || create(:translator => translator, :model => model)
   end
 
-  def self.report_for(translator, object)
-    self.where("translator_id = ? and object_type = ? and object_id = ?", translator.id, object.class.name, object.id).first
+  def self.report_for(translator, model)
+    self.where("translator_id = ? and model_type = ? and model_id = ?", translator.id, model.class.name, model.id).first
   end
   
-  def self.title_for(object)
-    object.class.name.underscore.split('_').collect{|item| item.capitalize}.join(' ')
+  def self.title_for(model)
+    model.class.name.underscore.split('_').collect{|item| item.capitalize}.join(' ')
   end
   
-  def self.default_reasons_for(object)
-    if object.is_a?(Tr8n::TranslationKey)
+  def self.default_reasons_for(model)
+    if model.is_a?(Tr8n::TranslationKey)
       return ['Bad Grammar', 'Bad Tokens', 'Premature Lock', 'Other:']
     end
 
-    if object.is_a?(Tr8n::Translation)
+    if model.is_a?(Tr8n::Translation)
       return ['Inappropriate Language', 'Bad Tokens', 'Spam', 'Vandalism', 'Other:']
     end
 
-    if object.is_a?(Tr8n::Translator)
+    if model.is_a?(Tr8n::Translator)
       return ['Spammer', 'Vandalist', 'Bully', 'Other:']
     end
 
-    if object.is_a?(Tr8n::Forum::Message)
+    if model.is_a?(Tr8n::Forum::Message)
       return ['Inappropriate Language', 'Bad Tokens', 'Spam', 'Vandalism', 'Other:']
     end
 
-    if object.is_a?(Tr8n::Forum::Topic)
+    if model.is_a?(Tr8n::Forum::Topic)
       return ['Inappropriate Language', 'Bad Tokens', 'Spam', 'Vandalism', 'Other:']
     end
 
-    if object.is_a?(Tr8n::TranslationKeyComment)
+    if model.is_a?(Tr8n::TranslationKeyComment)
       return ['Inappropriate Language', 'Spam', 'Vandalism', 'Other:']
     end
     
     ['Inappropriate Language']
   end
 
-  def self.submit(translator, object, reason, comment)
-    report = find_or_create(translator, object)
+  def self.submit(translator, model, reason, comment)
+    report = find_or_create(translator, model)
     report.update_attributes(:reason => reason, :comment => comment)
     
-    if object.is_a?(Tr8n::Translation) 
-      object.vote!(translator, -100)
-      submit(translator, object.translator, "bad translation #{object.id}", comment)
-    elsif object.is_a?(Tr8n::Forum::Message)
-      submit(translator, object.translator, "bad message #{object.id}", comment)
+    if model.is_a?(Tr8n::Translation)
+      model.vote!(translator, -100)
+      submit(translator, model.translator, "bad translation #{model.id}", comment)
+    elsif model.is_a?(Tr8n::Forum::Message)
+      submit(translator, model.translator, "bad message #{model.id}", comment)
     end
   end
   

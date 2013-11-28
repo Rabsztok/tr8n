@@ -31,15 +31,15 @@
 #  actor_id         integer                        
 #  target_id        integer                        
 #  action           character varying(255)         
-#  object_type      character varying(255)         
-#  object_id        integer                        
+#  model_type       character varying(255)         
+#  model_id         integer                        
 #  viewed_at        timestamp without time zone    
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_notifs_obj       (object_type, object_id) 
+#  tr8n_notifs_model     (model_type, model_id) 
 #  tr8n_notifs_trn_id    (translator_id) 
 #
 #++
@@ -58,18 +58,18 @@ class Tr8n::Notifications::Translation < Tr8n::Notification
     translators = translators.uniq - [translation.translator]
 
     translators.each do |t|
-      create(:translator => t, :object => translation, :actor => translation.translator, :action => "added_translation")
+      create(:translator => t, :model => translation, :actor => translation.translator, :action => "added_translation")
     end    
   end
 
   def title
-    if object.translation_key.followed?
+    if model.translation_key.followed?
       return tr("[link: {user}] added a translation to a phrase you are following.", nil, 
           :user => actor, :link => {:href => actor.url}
           )
     end
 
-    if self.class.translators_for_translation(object).include?(translator)
+    if self.class.translators_for_translation(model).include?(translator)
       return tr("[link: {user}] added another translation to a phrase you've translated.", nil, 
           :user => actor, :link => {:href => actor.url}
       )
@@ -85,7 +85,7 @@ class Tr8n::Notifications::Translation < Tr8n::Notification
   end
 
   def translation
-    object
+    model
   end
 
   def language

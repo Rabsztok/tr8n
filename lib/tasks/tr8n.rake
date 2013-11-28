@@ -155,6 +155,16 @@ namespace :tr8n do
     Tr8n::Logs::ExchangeSync.sync(opts)
   end
 
+  desc "attaches keys to applications"
+  task :attach_keys => :environment do
+    Tr8n::TranslationSource.all.each do |src|
+      pp "Processing #{src.application.name} :: #{src.source} :: #{src.keys.count} keys..."
+      src.keys.each do |key|
+        Tr8n::ApplicationTranslationKey.find_or_create(src.application, key)
+      end
+    end
+  end
+
   desc "fix languages"
   task :langs => :environment do
     backup = false

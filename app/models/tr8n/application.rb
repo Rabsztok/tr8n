@@ -65,6 +65,10 @@ class Tr8n::Application < ActiveRecord::Base
   has_many :application_translators, :class_name => 'Tr8n::ApplicationTranslator', :dependent => :destroy
   has_many :translators, :class_name => 'Tr8n::Translator', :through => :application_translators
 
+  # direct link between keys and applications - needed for mobile apps and better performance
+  has_many :application_translation_keys, :class_name => 'Tr8n::ApplicationTranslationKey', :dependent => :destroy
+  has_many :translation_keys, :class_name => 'Tr8n::TranslationKey', :through => :application_translation_keys
+
   has_one :decorator, :class_name => 'Tr8n::Decorator', :dependent => :destroy
 
   has_many :email_templates, :class_name => 'Tr8n::Emails::Template', :order => "keyword asc", :dependent => :destroy
@@ -166,6 +170,14 @@ class Tr8n::Application < ActiveRecord::Base
         token.destroy
       end
     end
+    valid_token
+  end
+
+  def find_or_create_client_token(scope = 'basic', expire_in = 3.months)
+    tokens = Tr8n::Oauth::ClientToken.where("application_id = ?", self.id).all
+    valid_token = find_valid_token_for_scope(tokens, scope)
+    valid_token ||= create_client_token(scope, expire_in)
+
     valid_token
   end
 

@@ -31,46 +31,46 @@
 #  actor_id         integer                        
 #  target_id        integer                        
 #  action           character varying(255)         
-#  object_type      character varying(255)         
-#  object_id        integer                        
+#  model_type       character varying(255)         
+#  model_id         integer                        
 #  viewed_at        timestamp without time zone    
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_notifs_obj       (object_type, object_id) 
+#  tr8n_notifs_model     (model_type, model_id) 
 #  tr8n_notifs_trn_id    (translator_id) 
 #
 #++
 
 class Tr8n::Notification < ActiveRecord::Base
   self.table_name = :tr8n_notifications
-  attr_accessible :translator, :actor, :target, :object, :action, :viewed_at
+  attr_accessible :translator, :actor, :target, :model, :action, :viewed_at
 
   belongs_to :translator, :class_name => "Tr8n::Translator"
 
   belongs_to :actor, :class_name => "Tr8n::Translator", :foreign_key => :actor_id
   belongs_to :target, :class_name => "Tr8n::Translator", :foreign_key => :target_id
-  belongs_to :object, :polymorphic => true
+  belongs_to :model, :polymorphic => true
 
-  def self.distribute(object)
+  def self.distribute(model)
     Tr8n::OfflineTask.schedule(self.name, :distribute_offline, {
-                               :object_type => object.class.name,
-                               :object_id => object.id
+                               :model_type => model.class.name,
+                               :model_id => model.id
     })
   end
 
   def self.distribute_offline(opts)
-    object = opts[:object_type].constantize.find_by_id(opts[:object_id])
-    return unless object
+    model = opts[:model_type].constantize.find_by_id(opts[:model_id])
+    return unless model
 
-    class_name = object.class.name.split("::").last
-    "Tr8n::Notifications::#{class_name}".constantize.distribute(object)
+    class_name = model.class.name.split("::").last
+    "Tr8n::Notifications::#{class_name}".constantize.distribute(model)
   end
 
-  def self.key(object)
-    object.class.name.underscore.split("/").last
+  def self.key(model)
+    model.class.name.underscore.split("/").last
   end
 
   def self.commenters(tkey, language)
@@ -79,7 +79,7 @@ class Tr8n::Notification < ActiveRecord::Base
   end
 
   def self.followers(obj)
-    Tr8n::TranslatorFollowing.where("object_type = ? and object_id = ?", 
+    Tr8n::TranslatorFollowing.where("model_type = ? and model_id = ?",
                           obj.class.name, obj.id).all.collect{|f| f.translator}
   end
 
@@ -109,15 +109,15 @@ class Tr8n::Notification < ActiveRecord::Base
   end
 
   def mentioned_translators
-    @mentioned_translators ||= self.class.mentioned(object.mentions, object.message)
+    @mentioned_translators ||= self.class.mentioned(model.mentions, model.message)
   end
 
   def key
-    self.class.key(object)
+    self.class.key(model)
   end
 
   def valid_notification?
-    return false unless object
+    return false unless model
     true
   end
 

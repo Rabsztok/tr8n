@@ -27,8 +27,8 @@
 #
 #  id               integer                        not null, primary key
 #  translator_id    integer                        
-#  object_id        integer                        
-#  object_type      character varying(255)         
+#  model_id         integer                        
+#  model_type       character varying(255)         
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
@@ -40,20 +40,20 @@
 
 class Tr8n::TranslatorFollowing < ActiveRecord::Base
   self.table_name = :tr8n_translator_following
-  attr_accessible :translator_id, :object_id, :object_type
-  attr_accessible :translator, :object
+  attr_accessible :translator_id, :model_id, :model_type
+  attr_accessible :translator, :model
 
   belongs_to :translator, :class_name => "Tr8n::Translator"
-  belongs_to :object, :polymorphic => true
+  belongs_to :model, :polymorphic => true
 
   after_create :distribute_notification
   
-  def self.find_or_create(translator, object)
-    following_for(translator, object) || create(:translator => translator, :object => object)
+  def self.find_or_create(translator, model)
+    following_for(translator, model) || create(:translator => translator, :model => model)
   end
 
-  def self.following_for(translator, object)
-    where("translator_id = ? and object_type = ? and object_id = ?", translator.id, object.class.name, object.id).first
+  def self.following_for(translator, model)
+    where("translator_id = ? and model_type = ? and model_id = ?", translator.id, model.class.name, model.id).first
   end
   
   def distribute_notification

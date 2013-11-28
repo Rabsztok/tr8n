@@ -28,70 +28,10 @@ class Tr8n::App::TranslationsController < Tr8n::App::BaseController
   
   # list of translations    
   def index
-    #@translations = Tr8n::Translation.for_params(params.merge(:application => @selected_application, :only_phrases => true))
-    #@translations = @translations.order("created_at desc, rank desc").page(page).per(per_page)
-    # restricted_keys = Tr8n::TranslationKey.all_restricted_ids
-
-    # # exclude all restricted always
-    # if restricted_keys.any?
-    #   @translations = @translations.where("translation_key_id not in (?)", restricted_keys)
-    # end
-
-    # @translations = Tr8n::Translation.for_params(params).order("created_at desc, rank desc").page(page).per(per_page)
-
     @language_id = params[:language_id] || tr8n_current_language.id.to_s
+    language = @language_id.blank? ? nil : Tr8n::Language.find_by_id(@language_id)
 
-    @translations = Tr8n::Translation.order("tr8n_translations.created_at desc")
-
-    unless @language_id.blank?
-      @translations = @translations.where(:language_id => @language_id)
-    end
-
-    @source_ids = selected_application.sources.collect{|s| s.id}
-
-    if @source_ids.size > 0
-      #@ids = Tr8n::TranslationKeySource.connection.execute("select translation_key_id from tr8n_translation_key_sources where translation_source_id in (#{@source_ids.join(',')})").collect{|r| r["translation_key_id"]}
-      @translations = @translations.where("tr8n_translations.translation_key_id in (select tr8n_translation_key_sources.translation_key_id from tr8n_translation_key_sources where translation_source_id in (#{@source_ids.join(',')}))", @ids)
-    else
-      @translations = @translations.where("1=2")
-    end
-
-    if params[:with_status] == "accepted"
-      @translations = @translations.where("tr8n_translations.rank >= ?", selected_application.threshold)
-    elsif params[:with_status] == "pending"
-      @translations = @translations.where("tr8n_translations.rank >= 0 and tr8n_translations.rank < ?", selected_application.threshold)
-    elsif params[:with_status] == "rejected"
-      @translations = @translations.where("tr8n_translations.rank < 0")
-    end
-
-    params[:submitted_by] = nil if params[:submitted_by] == "anyone"
-    unless params[:submitted_by].blank?
-      if params[:submitted_by] == "me"
-        @translations = @translations.where("tr8n_translations.translator_id = ?", tr8n_current_translator.id)
-      else
-        @translations = @translations.where("tr8n_translations.translator_id = ?", params[:submitted_by])
-      end
-    end
-
-    if params[:submitted_on] == "today"
-      date = Date.today
-      @translations = @translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, date + 1.day)
-    elsif params[:submitted_on] == "yesterday"
-      date = Date.today - 1.days
-      @translations = @translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, date + 1.day)
-    elsif params[:submitted_on] == "last_week"
-      date = Date.today - 7.days
-      @translations = @translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, Date.today)
-    elsif params[:submitted_on] == "last_month"
-      date = Date.today - 1.month
-      @translations = @translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, Date.today)
-    end
-
-    unless params[:search].blank?
-      @translations = @translations.where("tr8n_translations.label like ?", "%#{params[:search]}%")
-    end
-
-    @translations = @translations.order("tr8n_translations.id desc").page(page).per(per_page).includes(:translation_key)
+    @translations = Tr8n::Translation.for_params(selected_application, language, tr8n_current_translator, params).page(page).per(per_page).includes(:translation_key)
   end
 
   # main translation method used by the dashboard and translation screens

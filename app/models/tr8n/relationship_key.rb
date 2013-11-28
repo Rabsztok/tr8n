@@ -205,7 +205,7 @@ class Tr8n::RelationshipKey < Tr8n::TranslationKey
 
     elsif params[:phrase_type] == "followed"
       conditions[0] << " and " unless conditions[0].blank?
-      conditions[0] << " tr8n_translation_keys.id in (select tr8n_translator_following.object_id from tr8n_translator_following where tr8n_translator_following.translator_id = ? and tr8n_translator_following.object_type = ?)"
+      conditions[0] << " tr8n_translation_keys.id in (select tr8n_translator_following.model_id from tr8n_translator_following where tr8n_translator_following.translator_id = ? and tr8n_translator_following.model_type = ?)"
 
       conditions << Tr8n::RequestContext.current_translator.id
       conditions << 'Tr8n::TranslationKey'

@@ -31,15 +31,15 @@
 #  actor_id         integer                        
 #  target_id        integer                        
 #  action           character varying(255)         
-#  object_type      character varying(255)         
-#  object_id        integer                        
+#  model_type       character varying(255)         
+#  model_id         integer                        
 #  viewed_at        timestamp without time zone    
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_notifs_obj       (object_type, object_id) 
+#  tr8n_notifs_model     (model_type, model_id) 
 #  tr8n_notifs_trn_id    (translator_id) 
 #
 #++
@@ -66,7 +66,7 @@ class Tr8n::Notifications::TranslationKeyComment < Tr8n::Notification
     translators = translators.uniq - [comment.translator]
 
     translators.each do |t|
-      create(:translator => t, :object => comment, :actor => comment.translator, :action => "commented_on_translation_key")
+      create(:translator => t, :model => comment, :actor => comment.translator, :action => "commented_on_translation_key")
     end
   end
 
@@ -77,13 +77,13 @@ class Tr8n::Notifications::TranslationKeyComment < Tr8n::Notification
       )
     end
 
-    if object.translation_key.followed?
+    if model.translation_key.followed?
       return tr("[link: {user}] commented on a translation to a phrase you are following.", nil, 
           :user => actor, :link => {:href => actor.url}
       )
     end
 
-    if object.translation_key.commented?(object.language)
+    if model.translation_key.commented?(model.language)
       return tr("[link: {user}] replied to your comment.", nil, 
           :user => actor, :link => {:href => actor.url}
       )
@@ -99,7 +99,7 @@ class Tr8n::Notifications::TranslationKeyComment < Tr8n::Notification
   end
 
   def language
-    object.language
+    model.language
   end
 
 end

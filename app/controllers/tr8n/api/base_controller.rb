@@ -25,6 +25,7 @@ class Tr8n::Api::BaseController < ::ApplicationController
   
   before_filter :check_api_enabled
   before_filter :cors_preflight_check
+  before_filter
   skip_before_filter :verify_authenticity_token
 
   if Tr8n::Config.api_skip_before_filters.any?
@@ -96,22 +97,29 @@ private
     true
   end
 
+  def access_token
+    return nil if params[:access_token].blank?
+    @access_token ||= begin
+      token = Tr8n::Oauth::OauthToken.find_by_token(params[:access_token])
+      raise Tr8n::Tr8nException.new("Invalid access token") if token.nil? or not token.valid_token?
+      token
+    end
+  end
+
   def application
-    return nil if params[:client_id].blank?
-    @application ||= Tr8n::Application.find_by_key(params[:client_id])
-    #Tr8n::RequestContext.remote_application
+    @application ||= begin
+      if access_token
+        access_token.application
+      elsif params[:client_id] or params[:key]
+        # deprecated, only for backwards compatibility, will be removed soon
+        Tr8n::Application.find_by_key(params[:client_id] || params[:key])
+      end
+    end
   end
 
   def translator
-    return nil if params[:access_token].blank?
-    @translator ||= begin
-      token = Tr8n::Oauth::AccessToken.find_by_token(params[:access_token])
-      if token
-        token.translator
-      else
-        nil
-      end
-    end
+    return nil unless access_token
+    @translator ||= access_token.translator
   end
 
   def language

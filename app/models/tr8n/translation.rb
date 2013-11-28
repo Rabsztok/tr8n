@@ -348,5 +348,61 @@ class Tr8n::Translation < ActiveRecord::Base
      ["grouped by rank", "rank"],
      ["grouped by date", "date"]].collect{|option| [option.first.trl("Translation filter group by option"), option.last]}
   end
-  
+
+  def self.for_params(application, language = nil, translator = nil, params = {})
+    #@translations = Tr8n::Translation.for_params(params.merge(:application => @selected_application, :only_phrases => true))
+    #@translations = @translations.order("created_at desc, rank desc").page(page).per(per_page)
+    # restricted_keys = Tr8n::TranslationKey.all_restricted_ids
+
+    # # exclude all restricted always
+    # if restricted_keys.any?
+    #   @translations = @translations.where("translation_key_id not in (?)", restricted_keys)
+    # end
+
+    # @translations = Tr8n::Translation.for_params(params).order("created_at desc, rank desc").page(page).per(per_page)
+
+    translations = Tr8n::Translation.where("tr8n_translations.translation_key_id in (select tr8n_application_translation_keys.translation_key_id from tr8n_application_translation_keys where tr8n_application_translation_keys.application_id = ?)", application.id)
+
+    if language
+      translations = translations.where(:language_id => language.id)
+    end
+
+    if params[:with_status] == "accepted"
+      translations = translations.where("tr8n_translations.rank >= ?", application.threshold)
+    elsif params[:with_status] == "pending"
+      translations = translations.where("tr8n_translations.rank >= 0 and tr8n_translations.rank < ?", application.threshold)
+    elsif params[:with_status] == "rejected"
+      translations = translations.where("tr8n_translations.rank < 0")
+    end
+
+    params[:submitted_by] = nil if params[:submitted_by] == "anyone"
+    unless params[:submitted_by].blank?
+      if params[:submitted_by] == "me"
+        translations = translations.where("tr8n_translations.translator_id = ?", translator.id)
+      else
+        translations = translations.where("tr8n_translations.translator_id = ?", params[:submitted_by])
+      end
+    end
+
+    if params[:submitted_on] == "today"
+      date = Date.today
+      translations = translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, date + 1.day)
+    elsif params[:submitted_on] == "yesterday"
+      date = Date.today - 1.days
+      translations = translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, date + 1.day)
+    elsif params[:submitted_on] == "last_week"
+      date = Date.today - 7.days
+      translations = translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, Date.today)
+    elsif params[:submitted_on] == "last_month"
+      date = Date.today - 1.month
+      translations = translations.where("tr8n_translations.created_at >= ? and tr8n_translations.created_at < ?", date, Date.today)
+    end
+
+    unless params[:search].blank?
+      translations = translations.where("tr8n_translations.label like ?", "%#{params[:search]}%")
+    end
+
+    translations.order("tr8n_translations.id desc")
+  end
+
 end

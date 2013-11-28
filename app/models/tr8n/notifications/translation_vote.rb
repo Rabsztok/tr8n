@@ -31,15 +31,15 @@
 #  actor_id         integer                        
 #  target_id        integer                        
 #  action           character varying(255)         
-#  object_type      character varying(255)         
-#  object_id        integer                        
+#  model_type       character varying(255)         
+#  model_id         integer                        
 #  viewed_at        timestamp without time zone    
 #  created_at       timestamp without time zone    not null
 #  updated_at       timestamp without time zone    not null
 #
 # Indexes
 #
-#  tr8n_notifs_obj       (object_type, object_id) 
+#  tr8n_notifs_model     (model_type, model_id) 
 #  tr8n_notifs_trn_id    (translator_id) 
 #
 #++
@@ -50,7 +50,7 @@ class Tr8n::Notifications::TranslationVote < Tr8n::Notification
     return if vote.translation.translator == vote.translator
 
     last_notification = find(:first,
-        :conditions => ["object_type = ? and object_id = ?", vote.class.name, vote.id],
+        :conditions => ["model_type = ? and model_id = ?", vote.class.name, vote.id],
         :order => "updated_at desc")
 
     return if last_notification and last_notification.updated_at > Time.now - 5.minutes
@@ -66,7 +66,7 @@ class Tr8n::Notifications::TranslationVote < Tr8n::Notification
     translators = translators.uniq - [vote.translator]
 
     translators.each do |t|
-     create(:translator => t, :object => vote, :actor => vote.translator, :action => "voted_on_translation")
+     create(:translator => t, :model => vote, :actor => vote.translator, :action => "voted_on_translation")
     end
   end
 
@@ -76,25 +76,25 @@ class Tr8n::Notifications::TranslationVote < Tr8n::Notification
   end
 
   def title
-    if object.translation.translation_key.followed?
-      return tr("[link: {user}] #{verb(object)} a translation to a phrase you are following.", nil, 
+    if model.translation.translation_key.followed?
+      return tr("[link: {user}] #{verb(model)} a translation to a phrase you are following.", nil,
           :user => actor, :link => {:href => actor.url}
       )
     end
 
-    if object.translation.translator == Tr8n::RequestContext.current_translator
-      return tr("[link: {user}] #{verb(object)} your translation.", nil, 
+    if model.translation.translator == Tr8n::RequestContext.current_translator
+      return tr("[link: {user}] #{verb(model)} your translation.", nil,
         :user => actor, :link => {:href => actor.url}
       )
     end
 
-    if self.class.translators_for_translation(object.translation).include?(translator)
-      return tr("[link: {user}] #{verb(object)} an alternative translation to a phrase you've translated.", nil, 
+    if self.class.translators_for_translation(model.translation).include?(translator)
+      return tr("[link: {user}] #{verb(model)} an alternative translation to a phrase you've translated.", nil,
         :user => actor, :link => {:href => actor.url}
       )
     end
 
-    tr("[link: {user}] #{verb(object)} a translation.", nil, 
+    tr("[link: {user}] #{verb(model)} a translation.", nil,
       :user => actor, :link => {:href => actor.url}
     )
   end
@@ -104,7 +104,7 @@ class Tr8n::Notifications::TranslationVote < Tr8n::Notification
   end
 
   def translation
-    object.translation
+    model.translation
   end
 
   def language
