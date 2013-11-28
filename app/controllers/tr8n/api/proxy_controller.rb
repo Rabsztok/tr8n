@@ -80,6 +80,10 @@ class Tr8n::Api::ProxyController < Tr8n::Api::BaseController
       end
     end
 
+    uri = URI.parse(request.url)
+    @host = "//#{uri.host}"
+    @host += ":#{uri.port}" unless uri.port==80
+
     render(:partial => "/tr8n/app/js/init", :formats => [:js], :locals => {:uri => URI.parse(request.url), :opts => opts, :translations => translations, :source => source.to_s}, :content_type => "text/javascript")
   end
   
