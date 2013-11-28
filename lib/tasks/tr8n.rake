@@ -158,6 +158,7 @@ namespace :tr8n do
   desc "attaches keys to applications"
   task :attach_keys => :environment do
     Tr8n::TranslationSource.all.each do |src|
+      next unless src.application
       pp "Processing #{src.application.name} :: #{src.source} :: #{src.keys.count} keys..."
       src.keys.each do |key|
         Tr8n::ApplicationTranslationKey.find_or_create(src.application, key)
