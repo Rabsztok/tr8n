@@ -1,0 +1,14 @@
+<ul class="nav nav-tabs" style="padding-left:10px;padding-right:10px;">
+  <% [
+         # ["icon-home", "Dashboard", "dashboard", false],
+         ["icon-check", "Application", "index"],
+         # ["icon-globe", "Activity", "translations", false],
+         ["icon-bookmark", "Sources", "sources"],
+     ].each do |tab| %>
+    <li class="<%='active' if controller.action_name == tab[2] %>">
+      <%=link_to("/tr8n/app/dashboard/#{tab[2]}?id=#{params[:id]}") do %>
+        <%= tra(tab[1]) %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

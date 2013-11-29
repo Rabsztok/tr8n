@@ -39,10 +39,10 @@ private
   end
   helper_method :date_options
 
-  def language_options
+  def language_options(opts = {})
     @language_options ||= begin
       langs = tr8n_selected_application.languages.collect{|lang| [lang.english_name, lang.id.to_s]}
-      langs.unshift([tra("all languages"), ""])
+      langs.unshift([tra("all languages"), ""]) unless opts[:skip_all]
       langs
     end
   end

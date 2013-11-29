@@ -26,7 +26,58 @@ class Tr8n::App::DashboardController < Tr8n::App::BaseController
   before_filter :validate_application_management
 
   def index
+    @languages = selected_application.languages
+    @language_id = params[:language_id] || tr8n_current_language.id
+    @language = Tr8n::Language.find_by_id(@language_id)
+    @key_count = selected_application.translation_keys.count
 
+    @locked_key_count = Tr8n::TranslationKey.count("distinct tr8n_translation_keys.id",
+                                                       :conditions => [
+                                                           "atk.application_id = ? and tkl.language_id = ? and tkl.locked = ?",
+                                                           selected_application.id, @language_id, true],
+                                                       :joins => [
+                                                           "join tr8n_application_translation_keys as atk on tr8n_translation_keys.id = atk.translation_key_id",
+                                                           "join tr8n_translation_key_locks as tkl on tr8n_translation_keys.id = tkl.translation_key_id"
+                                                       ]
+    )
+
+    @translated_key_count = Tr8n::TranslationKey.count("distinct tr8n_translation_keys.id",
+                                                           :conditions => [
+                                                               "atk.application_id = ? and t.language_id = ?",
+                                                               selected_application.id, @language_id],
+                                                           :joins => [
+                                                               "join tr8n_application_translation_keys as atk on tr8n_translation_keys.id = atk.translation_key_id",
+                                                               "join tr8n_translations as t on tr8n_translation_keys.id = t.translation_key_id"
+                                                           ]
+    )
+
+    @not_translated_count = @key_count - @translated_key_count
+    @pending_approval_count = @translated_key_count - @locked_key_count
+  end
+
+  def sources
+    @languages = selected_application.languages
+    @language_id = params[:language_id] || tr8n_current_language.id
+    @language = Tr8n::Language.find_by_id(@language_id)
+
+    @sources = selected_application.sources.order("created_at desc")
+    unless params[:search].blank?
+      @sources = @sources.where("lower(source) like ? or lower(name) like ? or lower(description) like ?", "%#{params[:search].downcase}%", "%#{params[:search].downcase}%", "%#{params[:search].downcase}%")
+    end
+    @sources = @sources.page(page).per(per_page)
+
+  end
+
+  def recalculate_metric
+    metric = Tr8n::Metrics::TranslationSource.find_by_id(params[:id])
+    unless metric
+      trfe("Invalid metric id")
+      return redirect_to_source
+    end
+
+    metric.update_metrics!
+    trfn("The metric has been updated")
+    redirect_to_source
   end
 
 end

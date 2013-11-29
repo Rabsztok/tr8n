@@ -5,45 +5,116 @@
     <%=tra("Dashboard") %>
   </div>
 
+  <%= render :partial => "tabs" %>
+
   <div class="tr8n tr8n_container">
 
-    <div class="section_title">
-      <%= tra("Summary") %>
+    <%= form_tag({:action => :index}, {:method => :get, :style=>"margin-bottom:0px;", :id => :charts_form}) do %>
+      <div class="section blue">
+        <%=select_tag(:language_id, options_for_select(language_options, @language_id), :onChange => "Tr8n.Utils.Effects.submit('charts_form')")%>
+      </div>
+    <% end %>
+
+    <div class="section" style="text-align:center; background-color:white;">
+      <div id="language_total" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+      <script>
+        $(function () {
+          $('#language_total').highcharts({
+            chart: {
+              plotBackgroundColor: null,
+              plotBorderWidth: null,
+              plotShadow: false
+            },
+            title: {
+              text: '<%= trla("Translation Completeness in {language}", :language => @language.native_name) %>'
+            },
+            tooltip: {
+              pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+              pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                  enabled: true,
+                  color: '#000000',
+                  connectorColor: '#000000',
+                  formatter: function() {
+                    return this.point.name;
+                  }
+                }
+              }
+            },
+            series: [{
+              type: 'pie',
+              name: 'Progress',
+              data: [
+                {
+                  name: '<%=trla("Approved", "Approved translations") %>',
+                  y: <%=@locked_key_count || 0%>,
+                  color: '#00FF00'
+                },
+                {
+                  name: '<%=trla("Pending", "Pending translations") %>',
+                  y: <%=@pending_approval_count || 0%>,
+                  color: '#FFFF00'
+                },
+                {
+                  name: '<%=trla("Not Translated") %>',
+                  y: <%=@not_translated_count || 0%>,
+                  color: '#FF0000'
+                }
+              ]
+            }]
+          });
+        });
+      </script>
+
+    <div style="margin:5px; color:#666;">
+      <div style="display:inline-block; white-space:nowrap; padding:10px;">
+        <span style="background-color:#00FF00;display:inline;white-space:nowrap;">&nbsp;&nbsp;&nbsp</span>
+        <%=tra("Approved:", "Header for approved phrases") %>
+        <%=link_to(@locked_key_count || 0,
+                   {:controller => "/tr8n/app/phrases", :action => :index, :locale => @language.locale,
+                    :phrase_type => :with, :phrase_status => :approved}, {:target => "_top"}) %>
+      </div>
+
+      <div style="display:inline-block; white-space:nowrap; padding:10px;">
+        <span style="background-color:#FFFF00;display:inline;white-space:nowrap;">&nbsp;&nbsp;&nbsp;</span>
+        <%=tra("Pending Approval:", "Header for phrases that are pending approval") %>
+        <%=link_to(@pending_approval_count || 0,
+                   {:controller => "/tr8n/app/phrases", :action => :index, :locale => @language.locale,
+                    :phrase_type => :with, :phrase_status => :pending}, {:target => "_top"}) %>
+      </div>
+
+      <div style="display:inline-block; white-space:nowrap; padding:10px;">
+        <span style="background-color:#FF0000;display:inline;white-space:nowrap;">&nbsp;&nbsp;&nbsp;</span>
+        <%=tra("Not Translated:", "Header for phrases without translation") %>
+        <%=link_to(@not_translated_count || 0,
+                   {:controller => "/tr8n/app/phrases", :action => :index, :locale => @language.locale,
+                    :phrase_type => :without}, {:target => "_top"}) %>
+      </div>
+
+      <div style="padding:10px;">
+        <%=tra("Total Phrases:", "Header for total phrase count") %>
+        <%=link_to(@key_count || 0, {:controller => "/tr8n/app/phrases", :action => :index, :locale => @language.locale}, {:target => "_top"}) %>
+      </div>
     </div>
-
-    <div class="section">
-
-    This application contains 1000 keys in 50 sources.
-    The application is being translated by 40 translators in 39 languages.
-
-    There are 50 components registered for the application. All of them are live.
-    </div>
-
-    <div class="section_title">
-      Keys Summary for Russian language
-    </div>
-    <div class="section">
-      Out of 1000 keys, 6889 have at least one translation.
-      5000 keys are locked.
-
-      Pi chart of total vs translated vs locked.
-
-      New keys by date chart.
-
-      Translations by date chart.
-
-      Key locks by date chart.
-    </div>
-
-    <div class="section_title">
-      Components Status
-    </div>
-
-
-
-
 
   </div>
+
+  <div class="section grey">
+    <div class="tr8n_float_right" style="padding-right:5px;">
+      <%=tr8n_help_icon_tag("Dashboard") %>
+    </div>
+
+    <div class="tr8n_text_align_left" style="padding-top:5px;padding-bottom:20px;font-size:12px;">
+      <%= tra("Approved phrases are keys that have been reviewed and locked.") %>
+      <%= tra("Pending approval phrases are keys that have been translated and have a rank in the accepted range, but have not been locked yet.") %>
+    </div>
+  </div>
+
   <%= render :partial => "/tr8n/app/common/footer" %>
 
   <%=javascript_include_tag("tr8n/vendor/jquery/highcharts.js") %>

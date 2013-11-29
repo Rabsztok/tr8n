@@ -23,10 +23,7 @@
 
 class Tr8n::App::TranslationsController < Tr8n::App::BaseController
 
-  # for ssl access to the dashboard - using ssl_requirement plugin
-  ssl_allowed :submit  if respond_to?(:ssl_allowed)
-  
-  # list of translations    
+  # list of translations
   def index
     @language_id = params[:language_id] || tr8n_current_language.id.to_s
     language = @language_id.blank? ? nil : Tr8n::Language.find_by_id(@language_id)

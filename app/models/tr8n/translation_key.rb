@@ -208,7 +208,7 @@ class Tr8n::TranslationKey < ActiveRecord::Base
           lbl = token.prepare_label_for_translator(lbl, self.language)
         end
       end
-      CGI::escapeHTML(lbl).gsub("\n", '<br>').html_safe
+      lbl.gsub('<', '&lt;').gsub('>', '&gt;').gsub("\n", '<br>').html_safe
     end
   rescue
     lbl

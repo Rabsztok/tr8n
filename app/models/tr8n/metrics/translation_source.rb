@@ -70,10 +70,10 @@ class Tr8n::Metrics::TranslationSource < ActiveRecord::Base
   end
 
   def self.find_or_create(translation_source, language = Tr8n::RequestContext.current_language)
-    Tr8n::Cache.fetch(cache_key(translation_source.application, translation_source.source, language.locale)) do 
+    #Tr8n::Cache.fetch(cache_key(translation_source.application, translation_source.source, language.locale)) do
       translation_source_metric = where("translation_source_id = ? and language_id = ?", translation_source.id, language.id).first
       translation_source_metric || create(:translation_source => translation_source, :language_id => language.id)
-    end
+    #end
   end
 
   def update_metrics!(opts = {})
